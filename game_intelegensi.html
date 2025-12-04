@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game 14: Psikotes Inteligensi Simulasi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+            min-height: 100vh;
+        }
+        #game-container {
+            background-color: rgba(34, 49, 63, 0.95);
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        h1 { color: #f1c40f; margin-bottom: 5px; }
+        #instruction { color: #bdc3c7; margin-bottom: 30px; font-style: italic; }
+
+        .question-card {
+            background-color: #2c3e50;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            text-align: left;
+            border-left: 5px solid #3498db;
+        }
+        .question-card h3 { color: #3498db; margin-top: 0; font-weight: 600; }
+        .options label {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #34495e;
+        }
+        .options input[type="radio"]:checked + span {
+            font-weight: bold;
+            color: #f1c40f;
+        }
+        
+        #submit-button {
+            padding: 15px 30px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+        }
+        #submit-button:hover { background-color: #27ae60; }
+        
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #c0392b;
+            border-radius: 10px;
+            display: none;
+        }
+        #result h2 { color: white; margin-top: 0; }
+        #score-display { font-size: 2.5em; font-weight: 700; color: #f1c40f; margin-bottom: 15px; }
+
+        #telegram-share-button {
+            background-color: #0088cc; color: white; padding: 10px 20px;
+            border-radius: 5px; text-decoration: none; border: none;
+            margin-top: 15px; cursor: pointer; font-weight: bold;
+        }
+        #kembali {
+            position: absolute; top: 20px; left: 20px;
+            color: #f1c40f; text-decoration: none; z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" id="kembali">← Menu</a>
+
+    <div id="game-container">
+        <h1>🧠 14: Psikotes Inteligensi Simulasi</h1>
+        <p id="instruction">Ukur kemampuan Penalaran Verbal, Numerik, dan Spasial Anda (Total 8 Soal).</p>
+
+        <form id="quiz-form">
+            
+            <div class="question-card" data-correct="B">
+                <h3>1. Penalaran Verbal: Analogi</h3>
+                <p><strong>Hujan : Payung</strong> memiliki hubungan yang sama dengan:</p>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="A"> <span>A. Panas : Matahari</span></label>
+                    <label><input type="radio" name="q1" value="B"> <span>B. Dingin : Selimut</span></label>
+                    <label><input type="radio" name="q1" value="C"> <span>C. Lapar : Makanan</span></label>
+                    <label><input type="radio" name="q1" value="D"> <span>D. Mengantuk : Tidur</span></label>
+                </div>
+            </div>
+
+            <div class="question-card" data-correct="C">
+                <h3>2. Penalaran Verbal: Pengelompokan</h3>
+                <p>Manakah kata yang <strong>TIDAK</strong> termasuk dalam kelompoknya?</p>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="A"> <span>A. Sapi</span></label>
+                    <label><input type="radio" name="q2" value="B"> <span>B. Kambing</span></label>
+                    <label><input type="radio" name="q2" value="C"> <span>C. Ayam</span></label>
+                    <label><input type="radio" name="q2" value="D"> <span>D. Domba</span></label>
+                </div>
+            </div>
+
+            <div class="question-card" data-correct="B">
+                <h3>3. Penalaran Verbal: Silogisme</h3>
+                <p>Semua siswa kelas A pandai berhitung. Sebagian siswa yang pandai berhitung rajin belajar. <strong>Kesimpulan yang paling tepat adalah:</strong></p>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="A"> <span>A. Semua siswa kelas A rajin belajar.</span></label>
+                    <label><input type="radio" name="q3" value="B"> <span>B. Sebagian siswa kelas A pandai berhitung dan rajin belajar.</span></label>
+                    <label><input type="radio" name="q3" value="C"> <span>C. Semua siswa kelas A tidak rajin belajar.</span></label>
+                    <label><input type="radio" name="q3" value="D"> <span>D. Sebagian siswa yang rajin belajar bukan siswa kelas A.</span></label>
+                </div>
+            </div>
+
+            <div class="question-card" data-correct="C">
+                <h3>4. Penalaran Numerik: Deret</h3>
+                <p>Lanjutkan pola angka berikut: <strong>3, 6, 18, 72, ...</strong></p>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="A"> <span>A. 144</span></label>
+                    <label><input type="radio" name="q4" value="B"> <span>B. 216</span></label>
+                    <label><input type="radio" name="q4" value="C"> <span>C. 360</span></label>
+                    <label><input type="radio" name="q4" value="D"> <span>D. 432</span></label>
+                </div>
+            </div>
+
+            <div class="question-card" data-correct="A">
+                <h3>5. Penalaran Numerik: Operasi</h3>
+                <p>Jika P = 7 dan Q = 9, maka nilai dari <strong>5P + 2Q</strong> adalah:</p>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="A"> <span>A. 53</span></label>
+                    <label><input type="radio" name="q5" value="B"> <span>B. 63</span></label>
+                    <label><input type="radio" name="q5" value="C"> <span>C. 68</span></label>
+                    <label><input type="radio" name="q5" value="D"> <span>D. 75</span></label>
+                </div>
+            </div>
+
+            <div class="question-card" data-correct="C">
+                <h3>6. Penalaran Numerik: Aritmatika</h3>
+                <p>Sebuah jam terlambat 3 menit setiap jam. Jika sekarang pukul 09.00 (waktu benar), pukul berapa jam itu akan menunjukkan waktu yang benar lagi?</p>
+                <div class="options">
+                    <label><input type="radio" name="q6" value="A"> <span>A. 3 hari</span></label>
+                    <label><input type="radio" name="q6" value="B"> <span>B. 5 hari</span></label>
+                    <label><input type="radio" name="q6" value="C"> <span>C. 10 hari</span></label>
+                    <label><input type="radio" name="q6" value="D"> <span>D. 20 hari</span></label>
+                </div>
+            </div>
+            
+            <div class="question-card" data-correct="A">
+                <h3>7. Penalaran Spasial: Rotasi</h3>
+                <p>Jika sebuah kubus (dengan pola tertentu) diputar 90° searah jarum jam, manakah dari gambar berikut yang menunjukkan hasilnya?</p>
+                <p style="font-style: italic; color: #7f8c8d;">(Anggap A adalah jawaban rotasi yang benar, fokus pada penalaran Anda)</p>
+                <div class="options">
+                    <label><input type="radio" name="q7" value="A"> <span>A. Opsi A</span></label>
+                    <label><input type="radio" name="q7" value="B"> <span>B. Opsi B</span></label>
+                    <label><input type="radio" name="q7" value="C"> <span>C. Opsi C</span></label>
+                    <label><input type="radio" name="q7" value="D"> <span>D. Opsi D</span></label>
+                </div>
+            </div>
+
+            <div class="question-card" data-correct="B">
+                <h3>8. Penalaran Spasial: Pola Berurutan</h3>
+                <p>Manakah bentuk yang tepat untuk mengisi tanda tanya (?) pada urutan pola gambar yang berlanjut?</p>
+                <p style="font-style: italic; color: #7f8c8d;">(Anggap B adalah jawaban yang melanjutkan pola secara logis, fokus pada penalaran Anda)</p>
+                <div class="options">
+                    <label><input type="radio" name="q8" value="A"> <span>A. Opsi A</span></label>
+                    <label><input type="radio" name="q8" value="B"> <span>B. Opsi B</span></label>
+                    <label><input type="radio" name="q8" value="C"> <span>C. Opsi C</span></label>
+                    <label><input type="radio" name="q8" value="D"> <span>D. Opsi D</span></label>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-button">SELESAI & HITUNG SKOR</button>
+        </form>
+
+        <div id="result">
+            <h2>Hasil Simulasi Inteligensi Anda</h2>
+            <div id="score-display"></div>
+            <p id="feedback"></p>
+            <button id="telegram-share-button">Pamer Skor Inteligensi ke @GW_GK</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('quiz-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const questions = document.querySelectorAll('.question-card');
+            let score = 0;
+            const totalQuestions = questions.length;
+
+            questions.forEach(q => {
+                const correct = q.getAttribute('data-correct');
+                const name = q.querySelector('input[type="radio"]').name;
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                
+                // Cek jawaban
+                if (selected && selected.value === correct) {
+                    score++;
+                }
+            });
+
+            // Tampilkan Hasil
+            const resultDiv = document.getElementById('result');
+            const scoreDisplay = document.getElementById('score-display');
+            const feedbackText = document.getElementById('feedback');
+            
+            let message = '';
+            
+            if (score >= 7) {
+                message = "Anda menunjukkan tingkat Penalaran Superior! Kemampuan analisis dan logika Anda sangat tajam.";
+                resultDiv.style.backgroundColor = '#2ecc71'; // Hijau
+            } else if (score >= 4) {
+                message = "Tingkat Penalaran Anda Cukup Baik. Terus asah kemampuan verbal, numerik, dan spasial Anda!";
+                resultDiv.style.backgroundColor = '#f39c12'; // Oranye
+            } else {
+                message = "Anda perlu lebih banyak latihan dalam Penalaran. Fokus pada pola dan logika dasar untuk meningkatkan skor Anda.";
+                resultDiv.style.backgroundColor = '#c0392b'; // Merah
+            }
+
+            scoreDisplay.textContent = `${score} / ${totalQuestions}`;
+            feedbackText.textContent = message;
+            resultDiv.style.display = 'block';
+            document.getElementById('submit-button').style.display = 'none';
+            
+            // Scroll ke hasil
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('telegram-share-button').addEventListener('click', function() {
+            const score = document.getElementById('score-display').textContent;
+            const message = `Aku mendapat skor ${score} di Simulasi Psikotes Inteligensi! Aku tertantang di bagian logika/numerik. Coba kamu, @GW_GK!`;
+            const url = `https://t.me/GW_GK?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        });
+    </script>
+</body>
+</html>
