@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game 12: Simulasi Editor Pas Foto Formal</title>
+    <title>Game 12: Simulasi Penggantian Latar Belakang</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1f1c2c 0%, #0d0c13 100%); 
+            background: linear-gradient(135deg, #1f1c2c 0%, #0d0c13 100%);
             color: #ecf0f1;
             display: flex;
             flex-direction: column;
@@ -20,13 +20,13 @@
             background-color: #1a1a1a;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(46, 204, 113, 0.3); /* Hijau Formal Shadow */
+            box-shadow: 0 0 20px rgba(135, 206, 250, 0.4); /* Light Blue Shadow */
             max-width: 500px;
             width: 100%;
             text-align: center;
         }
         h1 {
-            color: #2ecc71; /* Hijau Sukses */
+            color: #87cefa; /* Sky Blue */
             margin-bottom: 5px;
         }
         #instruction {
@@ -34,10 +34,10 @@
             margin-bottom: 25px;
         }
 
-        /* INPUT DAN WARNA */
+        /* INPUT & WARNA */
         #input-area { margin-bottom: 25px; }
         .color-button {
-            padding: 10px 20px;
+            padding: 10px 15px;
             margin: 5px;
             border: 2px solid transparent;
             border-radius: 5px;
@@ -45,14 +45,15 @@
             font-weight: bold;
             transition: border-color 0.2s;
         }
-        /* Warna Pas Foto Formal */
-        .color-button.red { background-color: #c0392b; color: white; } /* Merah Tua Formal */
-        .color-button.blue { background-color: #2980b9; color: white; } /* Biru Tua Formal */
+        .color-button.red { background-color: #e74c3c; color: white; }
+        .color-button.blue { background-color: #3498db; color: white; }
+        .color-button.green { background-color: #2ecc71; color: white; }
+        .color-button.black { background-color: #333; color: white; }
         .color-button.selected { border-color: yellow; border-width: 4px; }
         
         #scan-button {
             padding: 12px 30px;
-            background-color: #2ecc71; /* Hijau Mulai */
+            background-color: #87cefa;
             color: black;
             border: none;
             border-radius: 8px;
@@ -71,7 +72,7 @@
             border-radius: 10px; overflow: hidden; margin-bottom: 10px;
         }
         #progress-fill {
-            height: 100%; width: 0%; background-color: #f1c40f; /* Kuning Proses */
+            height: 100%; width: 0%; background-color: #87cefa;
             transition: width 0.3s linear;
         }
 
@@ -79,7 +80,7 @@
         #result-card {
             background-color: #2c3e50; padding: 25px; border-radius: 10px;
             margin-top: 30px; display: none; width: 100%;
-            border: 3px solid #f39c12; 
+            border: 3px solid #f39c12;
         }
         #chroma-output {
             width: 100%; height: 300px; margin-top: 15px;
@@ -90,12 +91,12 @@
             width: 100%; height: 100%;
             object-fit: contain; 
             position: absolute;
-            z-index: 2;
+            z-index: 2; /* Foto di atas background */
         }
         #background-color-layer {
             width: 100%; height: 100%;
             position: absolute;
-            z-index: 1;
+            z-index: 1; /* Layer warna di bawah foto */
         }
 
         #telegram-share-button {
@@ -105,7 +106,7 @@
         }
         #kembali {
             position: absolute; top: 20px; left: 20px;
-            color: #2ecc71; text-decoration: none; z-index: 100;
+            color: #87cefa; text-decoration: none; z-index: 100;
         }
     </style>
 </head>
@@ -113,34 +114,36 @@
     <a href="index.html" id="kembali">← Menu</a>
     
     <div id="scanner-container">
-        <h1>👔 Simulasi Editor Pas Foto Formal</h1>
-        <p id="instruction">Unggah foto, pilih warna latar (Merah/Biru), dan simulasikan foto untuk keperluan lamaran kerja!</p>
+        <h1>📷 Simulasi Pengganti Latar Belakang</h1>
+        <p id="instruction">Simulasi cepat mengganti latar foto dengan warna solid pilihan Anda. (Bukan AI nyata)</p>
 
         <div id="input-area">
             <input type="file" id="photo-input" accept="image/*" required>
             <div style="margin-top: 15px;">
-                <button class="color-button red" data-color="#c0392b">LATAR MERAH (Tgl. Lahir Genap)</button>
-                <button class="color-button blue" data-color="#2980b9">LATAR BIRU (Tgl. Lahir Ganjil)</button>
+                <button class="color-button red" data-color="#e74c3c">MERAH</button>
+                <button class="color-button blue" data-color="#3498db">BIRU</button>
+                <button class="color-button green" data-color="#2ecc71">HIJAU</button>
+                <button class="color-button black" data-color="#333">HITAM</button>
             </div>
         </div>
 
-        <button id="scan-button" disabled>PILIH WARNA & MULAI PROSES</button>
+        <button id="scan-button" disabled>PROSES PENGGANTIAN LATAR</button>
 
         <div id="progress-area">
-            <p id="progress-text">Menganalisis latar belakang...</p>
+            <p id="progress-text">Menjalankan simulasi AI penghapusan latar...</p>
             <div id="progress-bar">
                 <div id="progress-fill"></div>
             </div>
         </div>
 
         <div id="result-card">
-            <h2>✅ Foto Formal Siap!</h2>
+            <h2>✨ Penggantian Latar Selesai!</h2>
             <div id="chroma-output">
-                <img id="uploaded-image" src="" alt="Foto Formal Anda">
+                <img id="uploaded-image" src="" alt="Foto Anda">
                 <div id="background-color-layer"></div>
             </div>
-            <p style="margin-top: 15px; color: #f1c40f;">*Ini adalah simulasi, harap gunakan editor profesional untuk hasil akhir.</p>
-            <button id="telegram-share-button">Pamer Foto Lamaran Kerjaku ke @GW_GK</button>
+            <p style="margin-top: 15px; color: #f1c40f;">*Ini adalah efek visual simulasi. Latar asli foto tidak benar-benar terhapus.</p>
+            <button id="telegram-share-button">Pamer Foto Latar Baru ke @GW_GK</button>
         </div>
 
     </div>
@@ -156,8 +159,8 @@
         const colorLayer = document.getElementById('background-color-layer');
         const telegramButton = document.getElementById('telegram-share-button');
 
-        let selectedColorHex = null; // Menyimpan nilai HEX
-        let selectedColorName = null; // Menyimpan nama warna
+        let selectedColorHex = null;
+        let selectedColorName = null;
 
         // 1. Pilihan Warna
         colorButtons.forEach(button => {
@@ -165,11 +168,11 @@
                 colorButtons.forEach(btn => btn.classList.remove('selected'));
                 button.classList.add('selected');
                 selectedColorHex = button.dataset.color;
-                selectedColorName = button.classList.contains('red') ? 'Merah' : 'Biru';
+                selectedColorName = button.textContent; // Ambil teks tombol (MERAH, BIRU, dsb)
                 
                 if (photoInput.files.length > 0) {
                     scanButton.disabled = false;
-                    scanButton.textContent = 'PROSES FOTO!';
+                    scanButton.textContent = 'PROSES PENGGANTIAN LATAR';
                 }
             });
         });
@@ -182,7 +185,7 @@
                     uploadedImage.src = e.target.result;
                     if (selectedColorHex) {
                         scanButton.disabled = false;
-                        scanButton.textContent = 'PROSES FOTO!';
+                        scanButton.textContent = 'PROSES PENGGANTIAN LATAR';
                     }
                 };
                 reader.readAsDataURL(photoInput.files[0]);
@@ -197,11 +200,11 @@
 
         function startScan() {
             if (!photoInput.files.length || !selectedColorHex) {
-                alert("Pilih foto dan warna latar yang sesuai dengan tanggal lahir (Ganjil/Genap)!");
+                alert("Pilih foto dan warna latar dulu!");
                 return;
             }
             
-            // Tampilkan background warna yang dipilih di layer
+            // Terapkan warna latar belakang yang dipilih
             colorLayer.style.backgroundColor = selectedColorHex;
 
             // RESET TAMPILAN
@@ -230,12 +233,12 @@
             
             // Tampilkan hasil
             resultCard.style.display = 'block';
-            scanButton.textContent = 'UBAH WARNA LAGI!';
+            scanButton.textContent = 'UBAH LATAR LAGI!';
             scanButton.disabled = false;
         }
 
         function shareTelegram() {
-            const shareMessage = `Aku baru saja membuat pas foto lamaran kerja dengan latar ${selectedColorName} di Simulasi Editor Pas Foto Formal! Siap-siap dipanggil wawancara nih. Coba kamu, @GW_GK!`;
+            const shareMessage = `Aku baru coba ganti latar foto dengan warna ${selectedColorName} di Simulasi Penggantian Latar Belakang! Keren banget hasilnya (simulasi)! Coba kamu, @GW_GK!`;
             const url = `https://t.me/GW_GK?text=${encodeURIComponent(shareMessage)}`;
             window.open(url, '_blank');
         }
