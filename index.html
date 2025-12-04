@@ -3,205 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Game & Tool - GW_GK</title>
+    <title>Koleksi Game & Kuis | Home</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
-
+        :root {
+            --bg-dark: #1f1c2c;
+            --card-dark: #2c3e50;
+            --accent-blue: #3498db;
+            --accent-yellow: #f1c40f;
+            --text-light: #ecf0f1;
+        }
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1f1c2c 0%, #0d0016 100%);
-            color: #ecf0f1;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #0d0c13 100%);
+            color: var(--text-light);
+            margin: 0;
             padding: 20px;
-            text-align: center;
             min-height: 100vh;
-        }
-
-        #header-container {
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            color: #f1c40f; /* Kuning */
-            font-size: 2.5em;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
-        }
-
-        h2 {
-            color: #bdc3c7;
-            font-size: 1.2em;
-            font-weight: 400;
-            margin-top: 5px;
-        }
-        
-        /* Kategori Judul */
-        .category-header {
-            color: #6495ed; /* Cornflower Blue */
-            font-size: 1.8em;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #6495ed;
-            padding-bottom: 5px;
-            display: inline-block;
-        }
-
-        /* GRID TATA LETAK */
-        #games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* CARD STYLE UMUM */
-        .game-card {
-            background-color: #2c3e50;
-            padding: 20px;
-            border-radius: 12px;
-            text-decoration: none;
-            color: white;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #34495e;
+            align-items: center;
         }
-
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-            border-color: #f1c40f;
+        #main-container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
         }
-
-        /* EMBEL-EMBEL CARD */
-        .game-emoji {
+        h1 {
+            color: var(--accent-yellow);
             font-size: 2.5em;
             margin-bottom: 10px;
         }
-
-        .game-title {
-            font-size: 1.25em;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: #ecf0f1;
-        }
-
-        .game-description {
-            font-size: 0.9em;
+        p {
             color: #bdc3c7;
-            margin-top: auto;
+            margin-bottom: 40px;
         }
-        
-        /* Penomoran */
-        .game-card::before {
-            content: attr(data-number);
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        /* Grid untuk Daftar Game */
+        #game-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+        }
+        .game-card {
+            background-color: var(--card-dark);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            height: 100%; /* Penting untuk grid */
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+        .game-card a {
+            text-decoration: none;
+            color: var(--accent-blue);
+            font-size: 1.4em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .game-card a:hover {
+            color: var(--accent-yellow);
+        }
+        .category {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+        .description {
+            font-size: 0.95em;
+            line-height: 1.4;
+            color: var(--text-light);
+        }
+        footer {
+            margin-top: 50px;
             font-size: 0.8em;
-            font-weight: 800;
-            color: #f1c40f;
-            background-color: #34495e;
-            padding: 3px 8px;
-            border-radius: 5px;
+            color: #7f8c8d;
         }
     </style>
 </head>
 <body>
+    <div id="main-container">
+        <h1>🎮 Koleksi Game & Kuis Seru!</h1>
+        <p>Pilih game yang ingin Anda mainkan. Semua game berjalan secara lokal di browser Anda!</p>
 
-    <div id="header-container">
-        <h1>PORTAL GW_GK PAGES</h1>
-        <h2>Total 12 Game & Tool Pilihan Terbaik</h2>
+        <ul id="game-list">
+            
+            <li class="game-card">
+                <a href="game_ular.html">Game Ular Klasik 🐍</a>
+                <div class="category">Arkade | Klasik</div>
+                <div class="description">Uji refleks dan fokus Anda dengan game ular legendaris. Jangan tabrak dinding atau ekor sendiri!</div>
+            </li>
+            <li class="game-card">
+                <a href="game_meme.html">Stop the Scroll (Refleks Gen Z) ⏱️</a>
+                <div class="category">Refleks | Kecepatan</div>
+                <div class="description">Berhentikan teks yang bergerak tepat di tengah target. Uji kecepatan jempol Anda.</div>
+            </li>
+            <li class="game-card">
+                <a href="game_aesthetic.html">Perfect Loop Click (Aesthetic Test) ✨</a>
+                <div class="category">Refleks | Akurasi</div>
+                <div class="description">Klik tepat pada saat bar mencapai target di tengah. Raih skor 100% Aesthetic!</div>
+            </li>
+            <li class="game-card">
+                <a href="game_hilang.html">Cari Huruf yang Hilang 🔍</a>
+                <div class="category">Fokus | Ketelitian</div>
+                <div class="description">Latih ketelitian Anda dengan mencari huruf atau simbol tertentu yang tersembunyi di dalam lautan teks.</div>
+            </li>
+            
+            <li class="game-card">
+                <a href="game_krapelin.html">Tes Kraepelin (Penjumlahan Cepat) 📈</a>
+                <div class="category">Psikotes | Fokus</div>
+                <div class="description">Uji ketahanan fokus dan kecepatan berhitung Anda dalam batas waktu. Mirip dengan tes Pauli/Kraepelin.</div>
+            </li>
+            <li class="game-card">
+                <a href="game_intelegensi.html">Simulasi Psikotes Inteligensi 🧠</a>
+                <div class="category">Psikotes | Logika</div>
+                <div class="description">Kumpulan soal logika, numerik, dan pola untuk mengukur penalaran umum Anda.</div>
+            </li>
+            <li class="game-card">
+                <a href="game_iq.html">Game IQ (Uji Memori Visual) 💡</a>
+                <div class="category">Memori | Kognitif</div>
+                <div class="description">Ingat urutan kotak yang menyala dan ulangi pola tersebut untuk naik ke level berikutnya.</div>
+            </li>
+
+            <li class="game-card">
+                <a href="game_caklontong.html">Tebak Kata Cak Lontong 🤣</a>
+                <div class="category">Humor | Absurd</div>
+                <div class="description">Tebak jawaban yang tidak masuk akal (absurd) dan penuh jebakan khas Cak Lontong. Butuh Logika Terbalik!</div>
+            </li>
+            <li class="game-card">
+                <a href="game_gombal.html">Ujian Gombal Level Sultan 👑</a>
+                <div class="category">Humor | Cinta</div>
+                <div class="description">Jawab pertanyaan dengan gombalan paling *cheesy* untuk membuktikan Anda Raja/Ratu Gombal sejati.</div>
+            </li>
+            <li class="game-card">
+                <a href="game_lucu.html">Kuis Absurd (Logika Ngaco) 😂</a>
+                <div class="category">Humor</div>
+                <div class="description">Kuis dengan pertanyaan dan jawaban yang sangat tidak terduga dan menguji kesiapan Anda untuk ditroll.</div>
+            </li>
+            <li class="game-card">
+                <a href="game_gaul.html">Kuis Bahasa Gaul 2024 🔥</a>
+                <div class="category">Budaya Pop | Santai</div>
+                <div class="description">Uji pengetahuan Anda tentang istilah-istilah gaul dan singkatan viral terkini. Jangan sampai dibilang CRINGE!</div>
+            </li>
+            <li class="game-card">
+                <a href="game_artis.html">Artis Look-Alike Prank Scanner 🤳</a>
+                <div class="category">Prank | Hiburan</div>
+                <div class="description">Simulasi *scanner* yang mengklaim bisa mencocokkan wajah Anda dengan artis terkenal (Hanya untuk bersenang-senang!).</div>
+            </li>
+        </ul>
     </div>
     
-    <h2 class="category-header">Kuis & Game Psikotes (Skor & Logika)</h2>
-    <div id="games-grid">
-        
-        <a href="game_intelegensi.html" class="game-card" data-number="1"> 
-            <span class="game-emoji">🧠</span> 
-            <span class="game-title">Psikotes Inteligensi</span> 
-            <span class="game-description">Uji penalaran verbal, numerik, dan spasial (8 soal).</span> 
-        </a>
-
-        <a href="game_psikotes_mtk.html" class="game-card" data-number="2"> 
-            <span class="game-emoji">🔢</span> 
-            <span class="game-title">Psikotes MTK Dasar</span> 
-            <span class="game-description">Uji kecepatan dan akurasi berhitung dasar (8 soal).</span> 
-        </a>
-
-        <a href="game_krapelin.html" class="game-card" data-number="3"> 
-            <span class="game-emoji">⏳</span> 
-            <span class="game-title">Tes Kraepelin (Fokus)</span> 
-            <span class="game-description">Simulasi tes koran untuk menguji konsentrasi dan ketahanan.</span> 
-        </a>
-
-        <a href="game_iq.html" class="game-card" data-number="4"> 
-            <span class="game-emoji">✨</span> 
-            <span class="game-title">Game IQ: Uji Memori Visual</span> 
-            <span class="game-description">Ikuti pola warna dan tingkatkan level IQ memori Anda.</span> 
-        </a>
-    </div>
-
-    <h2 class="category-header">Kuis & Game Entertainment (Refleks & Viral)</h2>
-    <div id="games-grid">
-        
-        <a href="game_gaul.html" class="game-card" data-number="5"> 
-            <span class="game-emoji">🤙</span> 
-            <span class="game-title">Kuis Bahasa Gaul 2024</span> 
-            <span class="game-description">Uji pengetahuan tentang istilah-istilah gaul terbaru.</span> 
-        </a>
-        
-        <a href="game_gombal.html" class="game-card" data-number="6"> 
-            <span class="game-emoji">👑</span> 
-            <span class="game-title">Ujian Gombal Level Sultan</span> 
-            <span class="game-description">Pilih gombalan paling efektif dan raih gelar Sultan Gombal.</span> 
-        </a>
-
-        <a href="game_lucu.html" class="game-card" data-number="7"> 
-            <span class="game-emoji">🤪</span> 
-            <span class="game-title">Kuis Absurd</span> 
-            <span class="game-description">Uji logika terbalik Anda dengan serangkaian pertanyaan konyol.</span> 
-        </a>
-
-        <a href="game_hilang.html" class="game-card" data-number="8"> 
-            <span class="game-emoji">🔎</span> 
-            <span class="game-title">Cari Huruf yang Hilang</span> 
-            <span class="game-description">Uji ketelitian dan fokus mata Anda di tengah lautan teks.</span> 
-        </a>
-        
-        <a href="game_aesthetic.html" class="game-card" data-number="9"> 
-            <span class="game-emoji">🎶</span> 
-            <span class="game-title">Perfect Loop Click</span> 
-            <span class="game-description">Uji refleks untuk menghentikan loop di titik sempurna (Aesthetic).</span> 
-        </a>
-
-        <a href="game_meme.html" class="game-card" data-number="10"> 
-            <span class="game-emoji">🛑</span> 
-            <span class="game-title">Stop the Scroll</span> 
-            <span class="game-description">Uji akurasi refleks Gen Z Anda. Stop scroll tepat di tengah!</span> 
-        </a>
-    </div>
-    
-    <h2 class="category-header">Alat & Simulasi Prank (AI & Scanner)</h2>
-    <div id="games-grid">
-
-        <a href="game_artis.html" class="game-card" data-number="11"> 
-            <span class="game-emoji">🤳</span> 
-            <span class="game-title">Artis Look-Alike Scanner</span> 
-            <span class="game-description">SIMULASI: Scan wajah dan temukan artis Indonesia yang mirip dengan Anda.</span> 
-        </a>
-        
-        <a href="tool_ai_bg_formal.html" class="game-card" data-number="12"> 
-            <span class="game-emoji">📸</span> 
-            <span class="game-title">AI Formal BG Tool</span> 
-            <span class="game-description">SIMULASI: Ganti latar belakang foto menjadi Merah/Biru untuk keperluan formal.</span> 
-        </a>
-    </div>
-
+    <footer>
+        <p>&copy; 2025 Koleksi Game & Kuis | Dibuat dengan @GW_GK.</p>
+    </footer>
 </body>
 </html>
