@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Sahabat Virtual: Kotak Penghangat Hati</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7; /* Latar Belakang Lembut */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        #companion-box {
+            width: 250px;
+            height: 250px;
+            background-color: #ffffff;
+            border-radius: 50%; /* Bentuk Lingkaran */
+            box-shadow: 0 8px 25px rgba(255, 160, 160, 0.4); /* Bayangan hangat */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+            margin: 30px 0;
+            border: 5px solid #ff9999;
+        }
+        #companion-box:hover {
+            transform: scale(1.05);
+        }
+        #companion-box:active {
+            transform: scale(0.98);
+        }
+        #message-display {
+            font-size: 1.5em;
+            color: #d63333; /* Merah Muda Hangat */
+            margin-bottom: 30px;
+            min-height: 50px; /* Jaga agar teks tidak melompat */
+            max-width: 80%;
+        }
+        #avatar-emoji {
+            font-size: 8em;
+            transition: all 0.5s;
+        }
+        h1 {
+            color: #4a4a4a;
+        }
+        p {
+            color: #666;
+        }
+        #telegram-share-button {
+            background-color: #0088cc;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            margin-top: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #kembali {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ff9999;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" id="kembali">← Menu</a>
+
+    <h1>Sahabat Virtual: Kotak Penghangat Hati</h1>
+    <p>Sentuh aku. Aku selalu ada untuk mendengarkanmu. 🤗</p>
+
+    <div id="message-display">Klik aku!</div>
+
+    <div id="companion-box">
+        <span id="avatar-emoji">💖</span>
+    </div>
+
+    <button id="telegram-share-button">Bagikan Kehangatan ini ke @GW_GK</button>
+
+    <script>
+        const messages = [
+            "Hai! Ingat, kamu sudah berusaha keras hari ini.",
+            "Semua akan baik-baik saja. Aku yakin itu.",
+            "Kamu lebih kuat dari yang kamu kira. Serius!",
+            "Jangan lupa minum air putih dan istirahat yang cukup, ya.",
+            "Ada yang lucu? Ceritakan padaku!",
+            "Aku senang kamu ada di sini. Sungguh.",
+            "Tarik napas panjang... kamu sudah melalui banyak hal.",
+            "Bahkan jika kamu jatuh, aku akan ada di sini saat kamu bangkit.",
+            "Aku bangga padamu, apapun hasilnya.",
+            "Satu langkah kecil hari ini sudah berarti kemenangan besar.",
+            "Lagi! Aku suka saat kamu berinteraksi denganku.",
+            "Ingat, bahkan bunga pun butuh waktu untuk mekar.",
+            "Jangan pernah ragu untuk tersenyum hari ini. Kamu pantas mendapatkannya."
+        ];
+        
+        const emojis = ["💖", "😊", "✨", "🫂", "🌟", "💡", "☕"];
+        
+        const companionBox = document.getElementById('companion-box');
+        const messageDisplay = document.getElementById('message-display');
+        const avatarEmoji = document.getElementById('avatar-emoji');
+        const telegramButton = document.getElementById('telegram-share-button');
+
+        let lastMessage = "";
+
+        function displayMessage() {
+            let newMessage;
+            // Pastikan pesan tidak berulang berturut-turut
+            do {
+                newMessage = messages[Math.floor(Math.random() * messages.length)];
+            } while (newMessage === lastMessage);
+            
+            lastMessage = newMessage;
+            messageDisplay.textContent = newMessage;
+            
+            // Ganti emoji avatar
+            avatarEmoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        }
+
+        function shareTelegram() {
+            const username = 'GW_GK';
+            const currentMessage = messageDisplay.textContent;
+            
+            const shareMessage = `Aku baru saja mendapatkan afirmasi positif: "${currentMessage}" dari Sahabat Virtual. Ini untukmu juga, @GW_GK! Mari saling mendukung.`;
+            const url = `https://t.me/${username}?text=${encodeURIComponent(shareMessage)}`;
+            window.open(url, '_blank');
+        }
+
+        companionBox.addEventListener('click', displayMessage);
+        telegramButton.addEventListener('click', shareTelegram);
+
+        // Pesan awal
+        messageDisplay.textContent = "Sentuh aku untuk mendapatkan pesan dukungan.";
+    </script>
+</body>
+</html>
