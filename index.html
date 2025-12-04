@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Portal: Game Pilihan Terbaik (11 Games!)</title>
+    <title>Arcade Portal: 11 Game Pilihan Terbaik</title>
     <style>
+        /* FONT IMPORT */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Gradien Biru Gelap */
             color: #ecf0f1;
             text-align: center;
             padding: 20px;
@@ -18,7 +19,7 @@
         }
         #header { margin: 40px 0 20px 0; }
         h1 {
-            font-size: 3.5em; color: #f39c12;
+            font-size: 3.5em; color: #f39c12; /* Oranye Terang */
             text-shadow: 2px 2px #c0392b; margin-bottom: 5px; font-weight: 800;
         }
         #subtitle { font-size: 1.2em; color: #bdc3c7; font-weight: 400; }
@@ -26,7 +27,7 @@
         #games-grid {
             max-width: 1200px; margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Tata Letak Kartu Responsif */
             gap: 25px; padding: 30px 0;
         }
 
@@ -49,11 +50,15 @@
         .game-emoji { font-size: 2.5em; margin-bottom: 15px; }
         .game-description { font-size: 0.95em; color: #7f8c8d; margin-top: 10px; }
 
-        /* Warna Tema */
-        .card-troll { --card-color: #e74c3c; } .card-gombal { --card-color: #ff69b4; }
-        .card-iq { --card-color: #f1c40f; } .card-support { --card-color: #2ecc71; } 
-        .card-absurd { --card-color: #9b59b6; } .card-kraepelin { --card-color: #3498db; }
-        .card-visual { --card-color: #e67e22; } .card-genz { --card-color: #61dafb; } /* Warna Baru untuk Gen Z */
+        /* Warna Tema per Kategori */
+        .card-absurd { --card-color: #9b59b6; } /* Ungu - Lucu */
+        .card-troll { --card-color: #e74c3c; } /* Merah - Ngeselin */
+        .card-gombal { --card-color: #ff69b4; } /* Pink - Gombal */
+        .card-iq { --card-color: #f1c40f; } /* Kuning - IQ/Memori */
+        .card-visual { --card-color: #e67e22; } /* Oranye - Visual/Detail */
+        .card-kraepelin { --card-color: #3498db; } /* Biru - Fokus/Endurance */
+        .card-support { --card-color: #2ecc71; } /* Hijau - Dukungan/Kesepian */
+        .card-genz { --card-color: #61dafb; } /* Cyan - Gen Z Games */
 
         #footer-note { margin-top: 40px; color: #bdc3c7; font-size: 0.9em; padding-bottom: 20px; }
     </style>
@@ -79,20 +84,25 @@
 
         <a href="game_krapelin.html" class="game-card card-kraepelin"> <span class="game-emoji">⏱️</span> <span class="game-title">Kraepelin Speed Test</span> <span class="game-description">Tes penjumlahan cepat. Uji fokus dan ketahanan mentalmu.</span> </a>
 
-        <a href="game_sahabat.html" class="game-card card-support"> <span class="game-emoji">🫂</span> <span class="game-title">Sahabat Virtual</span> <span class="game-description">Dapatkan pesan dukungan dan afirmasi hangat instan.</span> </a>
+        <a href="game_sahabat.html" class="game-card card-support"> <span class="game-emoji">🫂</span> <span class="game-title">Sahabat Virtual</span> <span class="game-description">Sentuh untuk mendapatkan pesan dukungan dan afirmasi hangat instan.</span> </a>
         
         <a href="game_meme.html" class="game-card card-genz"> <span class="game-emoji">🛑</span> <span class="game-title">Stop The Scroll</span> <span class="game-description">Reaksi cepat: Hentikan teks pada *timing* yang sempurna.</span> </a>
         
         <a href="game_gaul.html" class="game-card card-genz"> <span class="game-emoji">💅</span> <span class="game-title">Kuis Bahasa Gaul</span> <span class="game-description">Uji literasi budaya internet dan slang Gen Z terbaru!</span> </a>
 
         <a href="game_aesthetic.html" class="game-card card-genz"> <span class="game-emoji">✨</span> <span class="game-title">Perfect Loop Click</span> <span class="game-description">Klik untuk mencapai skor Estetika 100%. Uji presisimu!</span> </a>
+        
+        <a href="game_artis.html" class="game-card card-genz"> 
+            <span class="game-emoji">🤳</span> 
+            <span class="game-title">Artis Look-Alike Scan</span> 
+            <span class="game-description">SIMULATOR: Pindai wajah dan temukan kembaran artis Indonesia-mu!</span> 
+        </a>
 
     </div>
 
     <p id="footer-note">
         Setiap game diakhiri dengan tombol untuk membagikan skormu ke Telegram @GW_GK!
     </p>
-
 
 </body>
 </html>
