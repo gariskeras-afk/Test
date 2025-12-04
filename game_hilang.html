@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game 7: Cari Huruf yang Hilang</title>
+    <style>
+        body {
+            font-family: 'monospace', sans-serif; /* Font monospasi agar huruf sejajar */
+            background-color: #2c3e50; /* Biru gelap */
+            color: #ecf0f1; /* Abu terang */
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            overflow: hidden; /* Penting agar tidak ada scrollbar */
+            user-select: none; /* Teks tidak bisa diblok */
+        }
+        h1 {
+            color: #f1c40f; /* Kuning */
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        #instruction {
+            color: #bdc3c7;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        #game-area {
+            position: relative;
+            width: 100vw;
+            height: calc(100vh - 180px); /* Kurangi tinggi header dan footer */
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em; /* Ukuran teks utama */
+            line-height: 1.2; /* Jarak antar baris */
+            letter-spacing: 1px;
+        }
+        #text-grid {
+            width: 90%;
+            height: 90%;
+            white-space: pre-wrap; /* Agar baris baru dan spasi berfungsi */
+            word-break: break-all;
+            overflow: hidden; /* Jangan tampilkan scrollbar internal */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: left;
+        }
+        .highlighted-char {
+            background-color: rgba(255, 0, 0, 0.5); /* Merah transparan saat ditemukan */
+            border-radius: 3px;
+        }
+        #found-message {
+            margin-top: 20px;
+            font-size: 1.5em;
+            color: #27ae60; /* Hijau */
+            font-weight: bold;
+            display: none;
+        }
+        #kembali {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #f1c40f;
+            text-decoration: none;
+            z-index: 100;
+        }
+        #telegram-share-button {
+            background-color: #0088cc;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            margin-top: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            display: none; /* Sembunyikan di awal */
+        }
+        #reset-button {
+            background-color: #e67e22; /* Oranye */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            margin-top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" id="kembali">← Menu</a>
+    <h1>🔍 Cari Huruf yang Hilang!</h1>
+    <p id="instruction">Temukan 1 (satu) karakter yang berbeda atau hilang di antara ribuan teks "HAHAHAH"!</p>
+
+    <div id="game-area">
+        <pre id="text-grid"></pre>
+    </div>
+
+    <div id="found-message">🎉 SELAMAT! Kamu menemukannya!</div>
+    <button id="telegram-share-button">Kirim Kemenangan ke @GW_GK</button>
+    <button id="reset-button">Cari Lagi!</button>
+
+    <script>
+        const textGrid = document.getElementById('text-grid');
+        const foundMessage = document.getElementById('found-message');
+        const telegramButton = document.getElementById('telegram-share-button');
+        const resetButton = document.getElementById('reset-button');
+        const instruction = document.getElementById('instruction');
+
+        const baseText = "HAHAHAH "; // Teks yang akan diulang
+        const specialChar = "🧐"; // Karakter yang dicari
+        const targetCount = 1; // Berapa banyak karakter spesial yang disisipkan
+
+        let originalContent = ''; // Untuk menyimpan konten asli
+        let specialCharPositions = []; // Untuk menyimpan posisi karakter spesial
+        let foundCharacters = 0;
+
+        function generateGrid() {
+            textGrid.innerHTML = ''; // Bersihkan grid
+            specialCharPositions = [];
+            foundCharacters = 0;
+            foundMessage.style.display = 'none';
+            telegramButton.style.display = 'none';
+            resetButton.style.display = 'none';
+            instruction.textContent = `Temukan ${targetCount} karakter yang berbeda atau hilang di antara ribuan teks "HAHAHAH"!`;
+
+            // Tentukan ukuran grid berdasarkan lebar/tinggi viewport
+            const gridWidth = Math.floor(window.innerWidth / (baseText.length + 1) / 10); // Estimasi karakter per baris
+            const gridHeight = Math.floor(window.innerHeight / 20); // Estimasi baris
+
+            let contentArray = [];
+            let totalChars = 0;
+
+            // Isi array dengan baseText
+            for (let i = 0; i < gridWidth * gridHeight; i++) {
+                contentArray.push(baseText);
+                totalChars += baseText.length;
+            }
+
+            // Sisipkan karakter spesial secara acak
+            for (let i = 0; i < targetCount; i++) {
+                let randomIndex = Math.floor(Math.random() * contentArray.length);
+                let charIndex = Math.floor(Math.random() * baseText.length);
+                
+                // Ubah sebagian kecil teks menjadi specialChar
+                contentArray[randomIndex] = contentArray[randomIndex].substring(0, charIndex) + specialChar + contentArray[randomIndex].substring(charIndex + 1);
+                specialCharPositions.push(randomIndex * (baseText.length) + charIndex); // Hitung posisi global
+            }
+
+            originalContent = contentArray.join('');
+            
+            // Render ke DOM karakter per karakter untuk deteksi klik yang lebih presisi
+            for (let i = 0; i < originalContent.length; i++) {
+                const span = document.createElement('span');
+                span.textContent = originalContent[i];
+                span.dataset.index = i; // Simpan indeks global
+                span.addEventListener('click', handleCharClick);
+                textGrid.appendChild(span);
+            }
+        }
+
+        function handleCharClick(event) {
+            const clickedSpan = event.target;
+            const index = parseInt(clickedSpan.dataset.index);
+
+            // Cek apakah karakter yang diklik adalah karakter spesial yang belum ditemukan
+            if (specialCharPositions.includes(index) && !clickedSpan.classList.contains('highlighted-char')) {
+                clickedSpan.classList.add('highlighted-char');
+                foundCharacters++;
+
+                if (foundCharacters === targetCount) {
+                    foundMessage.style.display = 'block';
+                    telegramButton.style.display = 'block';
+                    resetButton.style.display = 'block';
+                    instruction.textContent = "🎉 Kamu sangat teliti! Bagikan kemenanganmu!";
+                    // Opsional: nonaktifkan semua klik setelah ditemukan
+                    Array.from(textGrid.children).forEach(span => span.removeEventListener('click', handleCharClick));
+                }
+            } else {
+                // Opsional: berikan feedback visual untuk klik yang salah
+                clickedSpan.style.backgroundColor = 'rgba(255, 255, 0, 0.5)'; // Kuning jika salah
+                setTimeout(() => { clickedSpan.style.backgroundColor = ''; }, 300);
+            }
+        }
+
+        function shareTelegram() {
+            const username = 'GW_GK';
+            const shareMessage = `Aku berhasil menemukan ${targetCount} huruf tersembunyi di Game "Cari Huruf yang Hilang"! Aku punya mata elang! Coba tantang dirimu, @GW_GK!`;
+            const url = `https://t.me/${username}?text=${encodeURIComponent(shareMessage)}`;
+            window.open(url, '_blank');
+        }
+        
+        resetButton.addEventListener('click', generateGrid);
+        telegramButton.addEventListener('click', shareTelegram);
+
+        // Inisialisasi grid saat halaman dimuat
+        generateGrid();
+        // Atur ulang grid jika ukuran jendela berubah
+        window.addEventListener('resize', generateGrid);
+    </script>
+</body>
+</html>
