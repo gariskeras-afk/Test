@@ -3,232 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uji Kesabaran Level DEWA (Dijamin Emosi!)</title>
-    
-    <link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😠</text></svg>">
-    
+    <title>Ujian Gombal Level Sultan 👑</title>
     <style>
-        /* CSS: Desain yang "Sengaja Jelek" dan Menyebalkan */
+        /* CSS: Desain Lucu dan Romantis */
         body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background-color: #ff00ff; /* Magenta Terang */
-            color: #ffff00; /* Kuning Neon */
-            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffeef2; /* Pink Muda */
+            color: #333;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow: hidden; 
-            user-select: none; 
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #game-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.5); /* Shadow pink */
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
         }
 
         h1 {
-            text-shadow: 3px 3px #000000;
-            text-align: center;
-            font-size: 3rem;
+            color: #ff69b4; /* Hot Pink */
+            font-size: 2.2rem;
             margin-bottom: 20px;
         }
-        
-        /* Loading Screen Styling */
-        #loading-screen {
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px black;
+
+        #question-display {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            min-height: 60px;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid white;
-            border-top: 5px solid black;
-            border-radius: 50%;
-            animation: putar 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes putar {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Area Game Styling */
-        #game-area {
-            display: none; 
-            text-align: center;
+        .option-button, .telegram-button { /* Kelas baru untuk tombol Telegram */
+            display: block;
             width: 100%;
-            height: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+        }
+        
+        /* Styling untuk Tombol Opsi */
+        .option-button {
+            border: 2px solid #ff69b4;
+            background-color: #fff;
+            color: #ff69b4;
+        }
+        .option-button:hover {
+            background-color: #ff69b4;
+            color: white;
+            transform: scale(1.02);
         }
 
-        /* Tombol Kabur */
-        #btn-duit {
-            position: absolute;
-            padding: 15px 30px;
-            font-size: 20px;
-            background-color: #00ff00; /* Hijau Neon */
-            color: blue;
-            border: 5px dashed red;
+        /* Styling untuk Tombol Telegram */
+        .telegram-button {
+            background-color: #0088cc; /* Warna khas Telegram */
+            color: white;
+            border: none;
             font-weight: bold;
-            cursor: progress; /* Kursor loading */
-            border-radius: 50px;
-            box-shadow: 5px 5px 0px #000;
-            transition: top 0.1s, left 0.1s; 
-            z-index: 50; /* Pastikan di atas elemen lain */
+            margin-top: 30px;
         }
-        
-        /* Pop-up Iklan Palsu Styling */
-        .fake-popup-content {
-            position:fixed; 
-            top:20%; 
-            left:50%; 
-            transform:translateX(-50%); 
-            padding:20px; 
-            background:#fff; 
-            border:5px solid red; 
-            z-index:100; 
-            box-shadow:0 0 15px #000; 
-            text-align:center;
-            color:black;
-            animation: bounce 1s infinite alternate; /* Animasi memantul */
-        }
-        
-        @keyframes bounce {
-            from { transform: translate(-50%, 0); }
-            to { transform: translate(-50%, -10px); }
+        .telegram-button:hover {
+            background-color: #007bb6;
+            transform: scale(1.03);
         }
 
-        #popup-overlay {
-            position:fixed; 
-            top:0; 
-            left:0; 
-            width:100%; 
-            height:100%; 
-            background:rgba(0,0,0,0.7); 
-            z-index:99;
+        #result-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d81b60; 
+            margin-top: 30px;
+            white-space: pre-wrap; 
         }
-
     </style>
 </head>
-<body oncontextmenu="return false;"> <div id="loading-screen">
-        <div class="spinner"></div>
-        <p id="loading-text">Menghubungkan ke Server NASA...</p>
-    </div>
+<body>
 
-    <div id="game-area">
-        <h1 id="judul">KLIK TOMBOL UNTUK MENANG RP 100 JUTA!</h1>
-        <input type="text" id="fake-input" placeholder="Jangan Ketik di sini!" style="margin-bottom: 20px; padding: 10px; font-size: 16px; border: 3px dashed yellow; background: black; color: white;">
-        <button id="btn-duit" onclick="alert('YAH! KAMU HAMPIR MENANG! COBA LAGI, KALAU BISA!')">AMBIL HADIAH</button>
-    </div>
-    
-    <div id="fake-popup" style="display:none;">
-        <div class="fake-popup-content">
-            <p style="font-size:1.5rem; font-weight:bold;">DISKON HEBOH KHUSUS HARI INI!</p>
-            <p style="color:red; font-size:2rem;">BELI SEKARANG, GRATIS ONGKIR!</p>
-            <button id="close-btn" style="padding:10px 20px; background:red; color:white; border:none; margin-top:10px; cursor:pointer;">TUTUP (GAK BISA)</button>
-        </div>
-        <div id="popup-overlay"></div>
-    </div>
+    <div id="game-container">
+        <h1>Ujian Gombal Level Sultan 👑</h1>
+        <p>Jawab pertanyaan di bawah ini dengan pilihan yang paling **GOMBAL** untuk membuktikan cintamu!</p>
+        
+        <div id="question-display"></div>
+        <div id="options-container"></div>
+        <div id="result-display"></div>
 
+        <button id="next-button" class="option-button" style="display:none; margin-top: 20px;">Lanjut Pertanyaan</button>
+        <button id="start-button" class="option-button">Mulai Tes Gombal!</button>
+        
+        <button id="telegram-share-button" class="telegram-button" style="display:none;">Kirim Hasil Gombal ke @GW_GK</button>
+    </div>
 
     <script>
-        // JAVASCRIPT: Otak dari semua kejahilan ini
+        const questions = [
+            {
+                text: "Mana yang paling Gombal?",
+                options: [
+                    { answer: "Aku suka kamu apa adanya.", isCorrect: false },
+                    { answer: "Aku mau kamu jadi pasangan hidupku.", isCorrect: false },
+                    { answer: "Matahari terbit dari timur, tapi senyumku terbit sejak ketemu kamu.", isCorrect: true } // Paling Gombal
+                ]
+            },
+            {
+                text: "Lengkapi Gombalan: 'Kamu itu seperti ...'?",
+                options: [
+                    { answer: "Google. Karena semua yang aku cari ada padamu.", isCorrect: true },
+                    { answer: "Buku, menarik untuk dibaca.", isCorrect: false },
+                    { answer: "Makanan, enak dipandang.", isCorrect: false }
+                ]
+            },
+            {
+                text: "Apa profesi yang paling cocok untuk Bapakmu?",
+                options: [
+                    { answer: "Tukang kue, karena anaknya manis sekali.", isCorrect: true }, 
+                    { answer: "Arsitek, karena membangun keluarga.", isCorrect: false },
+                    { answer: "Guru, karena mendidik kamu.", isCorrect: false }
+                ]
+            }
+        ];
 
-        const loadingScreen = document.getElementById('loading-screen');
-        const gameArea = document.getElementById('game-area');
-        const loadingText = document.getElementById('loading-text');
-        const btn = document.getElementById('btn-duit');
-        const judul = document.getElementById('judul');
-        const fakeInput = document.getElementById('fake-input');
-        const fakePopup = document.getElementById('fake-popup');
-        const closeBtn = document.getElementById('close-btn');
-        const favicon = document.getElementById('favicon');
-        
-        // --- 1. Logika Loading Palsu dan Inisialisasi Game ---
-        const texts = ["Menghubungkan ke Server NASA...", "Mencari Sinyal 6G...", "Mengunduh RAM Tambahan...", "Hampir Selesai (Bohong)...", "Sabar Ya..."];
-        let i = 0;
-        
-        function centerButton() {
-            btn.style.left = "50%";
-            btn.style.top = "60%";
-            btn.style.transform = "translate(-50%, -50%)";
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let finalGombalMessage = ""; // Variabel untuk menyimpan pesan hasil
+
+        const questionDisplay = document.getElementById('question-display');
+        const optionsContainer = document.getElementById('options-container');
+        const resultDisplay = document.getElementById('result-display');
+        const nextButton = document.getElementById('next-button');
+        const startButton = document.getElementById('start-button');
+        const telegramShareButton = document.getElementById('telegram-share-button');
+
+        startButton.addEventListener('click', startGame);
+        nextButton.addEventListener('click', loadNextQuestion);
+        telegramShareButton.addEventListener('click', shareTelegram); // Tambahkan event listener
+
+        function startGame() {
+            startButton.style.display = 'none';
+            telegramShareButton.style.display = 'none'; // Sembunyikan tombol Telegram
+            currentQuestionIndex = 0;
+            score = 0;
+            resultDisplay.textContent = '';
+            finalGombalMessage = "";
+            loadNextQuestion();
         }
 
-        const interval = setInterval(() => {
-            loadingText.innerText = texts[i];
-            i++;
-            if (i >= texts.length) {
-                clearInterval(interval);
-                loadingScreen.style.display = 'none';
-                gameArea.style.display = 'block';
-                centerButton(); // Posisikan tombol di tengah saat mulai
+        function loadNextQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const q = questions[currentQuestionIndex];
                 
-                // Mulai Trolling Pop-up setelah game dimulai
-                setTimeout(() => {
-                    fakePopup.style.display = 'block';
-                }, 4000); // Muncul setelah 4 detik bermain
+                questionDisplay.textContent = `${currentQuestionIndex + 1}. ${q.text}`;
+                optionsContainer.innerHTML = '';
+                nextButton.style.display = 'none';
+                resultDisplay.textContent = '';
+
+                q.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option.answer;
+                    button.classList.add('option-button');
+                    button.addEventListener('click', () => checkAnswer(option.isCorrect, button));
+                    optionsContainer.appendChild(button);
+                });
+            } else {
+                showFinalResult();
             }
-        }, 800); 
-
-        // --- 2. Logika Tombol Kabur ---
-        function moveButton() {
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            
-            const newX = Math.floor(Math.random() * (w - 180)); // 180 = lebar tombol
-            const newY = Math.floor(Math.random() * (h - 150)); // 150 = tinggi tombol
-
-            btn.style.left = newX + "px";
-            btn.style.top = newY + "px";
-
-            // Ubah teks judul untuk mengejek
-            const ejekan = ["AYO DONG!", "PAYAH!", "KURANG CEPAT!", "JARINYA KAKU YA?", "NYERAH AJA DEH!", "HAHAHA!"];
-            const randomEjek = ejekan[Math.floor(Math.random() * ejekan.length)];
-            judul.innerText = randomEjek;
         }
 
-        btn.addEventListener('mouseover', () => {
-            btn.style.transform = "none";
-            moveButton();
-        });
+        function checkAnswer(isCorrect, clickedButton) {
+            Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
 
-        // Untuk perangkat sentuh
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            btn.style.transform = "none";
-            moveButton();
-        });
-
-        // --- 3. Logika Koreksi Otomatis yang Mengganggu ---
-        fakeInput.addEventListener('input', () => {
-            const currentVal = fakeInput.value;
-            if (currentVal.length > 2) {
-                const trollWords = ["GAGAL", "LAMBAT", "BOCOR", "SEDIH", "SUSAH", "PUSING", "BERAT", "NOOB"];
-                const randomWord = trollWords[Math.floor(Math.random() * trollWords.length)];
-
-                setTimeout(() => {
-                    fakeInput.value = randomWord; 
-                }, 100); 
+            if (isCorrect) {
+                score++;
+                resultDisplay.textContent = '✅ Benar! Gombalan kamu Level Sultan!';
+                clickedButton.style.backgroundColor = 'lightgreen';
+                clickedButton.style.color = 'white';
+            } else {
+                resultDisplay.textContent = '❌ Salah! Gombalan kamu masih lemah. Coba yang lebih cheesy!';
+                clickedButton.style.backgroundColor = 'salmon';
+                clickedButton.style.color = 'white';
+                Array.from(optionsContainer.children).find(btn => {
+                    const option = questions[currentQuestionIndex].options.find(opt => opt.answer === btn.textContent);
+                    if (option.isCorrect) {
+                        btn.style.backgroundColor = 'lightgreen';
+                    }
+                });
             }
-        });
 
-        // --- 4. Logika Pop-up yang Tidak Bisa Ditutup ---
-        closeBtn.addEventListener('click', () => {
-            alert('Ups! Tombol tutupnya rusak. Silakan nikmati iklannya selagi bermain.');
-        });
-        
-        // --- 5. Logika Favicon Berubah (Troll di tab browser) ---
-        const icons = ['😠', '🤦‍♀️', '🤯', '😭', '🤡', '😵']; 
-        let iconIndex = 0;
+            currentQuestionIndex++;
+            nextButton.style.display = 'block';
+            nextButton.textContent = currentQuestionIndex < questions.length ? 'Lanjut Pertanyaan' : 'Lihat Hasil Akhir';
+        }
 
-        setInterval(() => {
-            iconIndex = (iconIndex + 1) % icons.length;
-            favicon.setAttribute('href', 
-                `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${icons[iconIndex]}</text></svg>`
-            );
-        }, 1200); // Ganti setiap 1.2 detik, bikin pusing!
+        function showFinalResult() {
+            questionDisplay.textContent = '--- UJIAN SELESAI ---';
+            optionsContainer.innerHTML = '';
+            nextButton.style.display = 'none';
+
+            let finalStatus = "";
+            let emoji = "";
+
+            if (score === questions.length) {
+                finalStatus = '💖 SELAMAT! Kamu adalah Raja/Ratu Gombal sejati!';
+                emoji = '👑';
+            } else if (score >= 1) {
+                finalStatus = '👍 LUMAYAN! Tingkatkan lagi Level Gombalmu.';
+                emoji = '😌';
+            } else {
+                finalStatus = '😔 GAGAL! Gombalanmu terlalu standar.';
+                emoji = '😭';
+            }
+            
+            let message = `Total skorku: ${score} dari ${questions.length}.\n\n${finalStatus}`;
+            resultDisplay.textContent = message;
+            
+            // Simpan pesan untuk Telegram
+            finalGombalMessage = `Aku sudah menyelesaikan *Ujian Gombal Level Sultan* dan hasilnya adalah: ${finalStatus} ${emoji} (Skor ${score}/${questions.length})! Sekarang giliran kamu, @GW_GK, untuk mencoba tantangan ini!`;
+
+            startButton.textContent = 'Ulangi Tes Gombal';
+            startButton.style.display = 'block';
+            telegramShareButton.style.display = 'block'; // Tampilkan tombol Telegram
+        }
+
+        function shareTelegram() {
+            const username = 'GW_GK';
+            
+            // Membuat URL deep link Telegram
+            const url = `https://t.me/${username}?text=${encodeURIComponent(finalGombalMessage)}`;
+            
+            // Buka di tab/window baru
+            window.open(url, '_blank');
+        }
+
+        // Mulai tampilan awal
+        optionsContainer.innerHTML = '<p>Klik "Mulai Tes Gombal" di bawah untuk memulai tantangan gombalan ini!</p>';
 
     </script>
+
 </body>
 </html>
