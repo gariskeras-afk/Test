@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uji Kesabaran Level Dewa</title>
+    <style>
+        /* CSS: Desain yang "Sengaja Jelek" dan Menyakitkan Mata */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #ff00ff; /* Magenta Terang */
+            color: #ffff00; /* Kuning Terang */
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; /* Font legendaris */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Mencegah scroll */
+            user-select: none; /* Teks tidak bisa diblok */
+        }
+
+        h1 {
+            text-shadow: 2px 2px #000;
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        #game-area {
+            display: none; /* Disembunyikan dulu saat loading */
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Tombol yang akan kabur */
+        #btn-duit {
+            position: absolute;
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #00ff00; /* Hijau Neon */
+            color: blue;
+            border: 5px border-style dashed red;
+            font-weight: bold;
+            cursor: progress; /* Kursor loading biar bingung */
+            border-radius: 50px;
+            box-shadow: 5px 5px 0px #000;
+            transition: top 0.1s, left 0.1s; /* Gerakan instan */
+        }
+
+        /* Layar Loading Palsu */
+        #loading-screen {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px black;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid white;
+            border-top: 5px solid black;
+            border-radius: 50%;
+            animation: putar 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes putar {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;"> <div id="loading-screen">
+        <div class="spinner"></div>
+        <p id="loading-text">Menghubungkan ke Server NASA...</p>
+    </div>
+
+    <div id="game-area">
+        <h1 id="judul">KLIK TOMBOL UNTUK MENANG RP 100 JUTA!</h1>
+        <button id="btn-duit" onclick="alert('YAH! KAMU HAMPIR MENANG! COBA LAGI!')">AMBIL HADIAH</button>
+    </div>
+
+    <script>
+        // JAVASCRIPT: Otak dari kejahilan ini
+
+        // 1. Logika Loading Palsu
+        const loadingScreen = document.getElementById('loading-screen');
+        const gameArea = document.getElementById('game-area');
+        const loadingText = document.getElementById('loading-text');
+
+        const texts = [
+            "Menghubungkan ke Server NASA...",
+            "Mencari Sinyal 6G...",
+            "Mengunduh RAM Tambahan...",
+            "Hampir Selesai (Bohong)...",
+            "Sabar Ya..."
+        ];
+
+        let i = 0;
+        const interval = setInterval(() => {
+            loadingText.innerText = texts[i];
+            i++;
+            if (i >= texts.length) {
+                clearInterval(interval);
+                loadingScreen.style.display = 'none';
+                gameArea.style.display = 'block';
+                // Posisikan tombol di tengah saat mulai
+                centerButton();
+            }
+        }, 800); // Ganti teks setiap 0.8 detik
+
+        // 2. Logika Tombol Kabur
+        const btn = document.getElementById('btn-duit');
+        const judul = document.getElementById('judul');
+
+        function moveButton() {
+            // Ambil ukuran layar
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            // Hitung posisi acak (dikurangi ukuran tombol biar gak keluar layar)
+            const newX = Math.floor(Math.random() * (w - 150));
+            const newY = Math.floor(Math.random() * (h - 100));
+
+            btn.style.left = newX + "px";
+            btn.style.top = newY + "px";
+
+            // Ubah teks judul untuk mengejek
+            const ejekan = [
+                "AYO DONG!", "PAYAH!", "KURANG CEPAT!", 
+                "JARINYA KAKU YA?", "NYERAH AJA DEH!", "HAHAHA!"
+            ];
+            const randomEjek = ejekan[Math.floor(Math.random() * ejekan.length)];
+            judul.innerText = randomEjek;
+        }
+
+        function centerButton() {
+            btn.style.left = "50%";
+            btn.style.top = "50%";
+            btn.style.transform = "translate(-50%, -50%)";
+        }
+
+        // Trigger saat mouse mendekat (Desktop)
+        btn.addEventListener('mouseover', () => {
+            btn.style.transform = "none"; // Hapus centering CSS
+            moveButton();
+        });
+
+        // Trigger saat disentuh (HP/Mobile)
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Mencegah klik beneran
+            btn.style.transform = "none";
+            moveButton();
+        });
+
+    </script>
+</body>
+</html>
