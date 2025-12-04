@@ -1,261 +1,339 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Formal BG Tool (Simulasi)</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1f1c2c 0%, #0d0c13 100%);
-            color: #ecf0f1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        #tool-container {
-            background-color: #1a1a1a;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(100, 149, 237, 0.4); /* Cornflower Blue */
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 {
-            color: #6495ed; /* Cornflower Blue */
-            margin-bottom: 5px;
-        }
-        #instruction {
-            color: #bdc3c7;
-            margin-bottom: 25px;
-        }
-
-        /* INPUT & WARNA */
-        #input-area { margin-bottom: 25px; }
-        .color-button {
-            padding: 10px 15px;
-            margin: 5px;
-            border: 2px solid transparent;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: border-color 0.2s;
-        }
-        .color-button.red { background-color: #e74c3c; color: white; }
-        .color-button.blue { background-color: #3498db; color: white; }
-        .color-button.selected { border-color: yellow; border-width: 4px; }
-        
-        #process-button {
-            padding: 12px 30px;
-            background-color: #6495ed; /* Cornflower Blue */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.2s;
-        }
-        #process-button:disabled { background-color: #555; cursor: not-allowed; }
-
-        /* PROGRESS BAR */
-        #progress-area { margin-top: 30px; display: none; }
-        #progress-bar {
-            width: 100%; height: 20px; background-color: #333;
-            border-radius: 10px; overflow: hidden; margin-bottom: 10px;
-        }
-        #progress-fill {
-            height: 100%; width: 0%; background-color: #6495ed; /* Cornflower Blue */
-            transition: width 0.3s linear;
-        }
-
-        /* RESULT CARD */
-        #result-card {
-            background-color: #2c3e50; padding: 25px; border-radius: 10px;
-            margin-top: 30px; display: none; width: 100%;
-            border: 3px solid #f39c12; /* Oranye untuk hasil */
-        }
-        #ai-output-container {
-            width: 100%;
-            height: 300px; 
-            margin-top: 15px;
-            border: 5px solid white;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: center; 
-            align-items: center; 
-        }
-        
-        #background-color-layer {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 1; 
-            background-color: transparent; 
-        }
-        #uploaded-image {
-            position: relative; 
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain; 
-            z-index: 2; 
-        }
-
-        #telegram-share-button {
-            background-color: #0088cc; color: white; padding: 10px 20px;
-            border-radius: 5px; text-decoration: none; border: none;
-            margin-top: 25px; cursor: pointer; font-weight: bold;
-        }
-        #kembali {
-            position: absolute; top: 20px; left: 20px;
-            color: #6495ed; 
-            text-decoration: none; z-index: 100;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Formal BG Tool: Hapus Background Otomatis</title>
+  <meta name="description" content="Upload foto, AI hapus background, ganti warna merah atau biru. Tanpa server. Cocok untuk GitHub Pages." />
+  <style>
+    :root{
+      --glass: rgba(255,255,255,0.06);
+      --panel-w: 980px;
+      --accent: #fff;
+      --bg-color: #111827;
+      --blue: #6495ed;
+      --yellow: #f1c40f;
+    }
+    *{box-sizing:border-box}
+    body{
+        margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+        font-family: 'Poppins', sans-serif; /* Menggunakan Poppins untuk konsistensi */
+        background: linear-gradient(135deg, #1f1c2c 0%, #0d0c13 100%);
+        color:var(--accent);padding:28px
+    }
+    .wrap{
+        width:100%;max-width:var(--panel-w);
+        background:var(--bg-color);
+        color:var(--accent);border-radius:12px;
+        padding:25px;
+        box-shadow:0 10px 30px rgba(15,23,42,0.6)
+    }
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px; flex-wrap: wrap;}
+    header h1{font-size:20px;margin:0; color: var(--blue);}
+    .controls{display:flex;gap:15px;align-items:flex-end;margin-top:20px;flex-wrap:wrap}
+    .card{display:flex;gap:25px;margin-top:25px;align-items:flex-start}
+    .left{flex:0 0 420px; max-width: 100%;}
+    .preview{
+        width:100%;height:560px;
+        background:#333; /* Warna gelap */
+        border-radius:8px;overflow:hidden;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow: 0 0 10px rgba(100, 149, 237, 0.5); /* Shadow biru */
+    }
+    canvas{display:block;max-width:100%;height:auto}
+    .right{flex:1;min-width:0;text-align: left;}
+    label{font-size:14px;display:block;margin-bottom:6px;font-weight: 600; color: var(--yellow);}
+    input[type=file]{display:block; margin-top: 5px;}
+    select, button, input[type=range]{padding:10px 15px;border-radius:8px;border:0;font-weight:600; font-family: 'Poppins', sans-serif;}
+    .btn{
+        background:var(--blue);
+        color:var(--accent);
+        cursor:pointer;
+        transition: background 0.2s;
+    }
+    .btn:hover{background:#4169e1;}
+    .btn:disabled{background:#555; cursor: not-allowed;}
+    
+    .note{margin-top:12px;color:rgba(255,255,255,0.8);font-size:14px}
+    footer{margin-top:20px;color:rgba(255,255,255,0.6);font-size:12px}
+    
+    #blurVal{color: var(--yellow);}
+    
+    #back-btn {
+        position: absolute; top: 20px; left: 20px;
+        color: var(--yellow); text-decoration: none; z-index: 100;
+        font-size: 1em;
+    }
+    
+    /* Media Queries */
+    @media (max-width:980px){
+        .card{flex-direction:column;align-items:center}
+        .left{flex-basis:100%; width: 100%;}
+        .preview{height: auto; min-height: 400px;}
+        .controls{justify-content: center;}
+    }
+    @media (max-width:500px){
+        .wrap{padding: 15px;}
+        .preview{height: 350px;}
+        .controls{gap: 10px; flex-direction: column; align-items: stretch;}
+        .controls > div { width: 100%; }
+        select, button { width: 100%; }
+    }
+  </style>
 </head>
 <body>
-    <a href="index.html" id="kembali">← Menu</a>
-    
-    <div id="tool-container">
-        <h1>📸 AI Formal BG Tool</h1>
-        <p id="instruction">Unggah foto Anda, biar AI kami (simulasi) mengganti latar belakangnya menjadi Merah atau Biru.</p>
+  <a href="index.html" id="back-btn">← Menu Utama</a>
+  
+  <main class="wrap" role="main">
+    <header>
+      <h1>📸 Hapus Background Otomatis (AI) — Formal Red/Blue</h1>
+      <div style="font-size:13px;opacity:0.8; margin-top: 5px;">*Model AI dijalankan sepenuhnya di browser Anda (privat)</div>
+    </header>
 
-        <div id="input-area">
-            <input type="file" id="photo-input" accept="image/*" required>
-            <div style="margin-top: 15px;">
-                <button class="color-button red" data-color="#e74c3c">MERAH (Genap)</button>
-                <button class="color-button blue" data-color="#3498db">BIRU (Ganjil)</button>
-            </div>
+    <section class="controls">
+      <div>
+        <label for="file">Unggah Foto Potret (JPG/PNG):</label>
+        <input id="file" type="file" accept="image/*">
+      </div>
+
+      <div>
+        <label for="color">Pilih Warna Background:</label>
+        <select id="color">
+          <option value="#8B0000">Merah Formal</option>
+          <option value="#0B3D91">Biru Formal</option>
+          <option value="#ffffff">Putih</option>
+          <option value="#000000">Hitam</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="blur">Mask Blur (Smoothing Tepi): <span id="blurVal">3</span>px</label>
+        <input id="blur" type="range" min="0" max="20" value="3" style="width: 100%;">
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn" id="processBtn">Proses (AI)</button>
+        <button class="btn" id="downloadBtn" disabled>Unduh PNG</button>
+      </div>
+    </section>
+
+    <div class="card">
+      <div class="left">
+        <div class="preview" aria-live="polite">
+          <canvas id="outCanvas" width="420" height="560" role="img" aria-label="Preview hasil"></canvas>
         </div>
+      </div>
 
-        <button id="process-button" disabled>MULAI PROSES AI</button>
+      <div class="right">
+        <p class="note">
+          **Petunjuk Cepat:**
+          <ol style="margin:8px 0 12px 18px">
+            <li>Unggah foto potret (subjek tunggal, fokus).</li>
+            <li>Pilih warna latar (Merah untuk tahun genap, Biru untuk ganjil).</li>
+            <li>Sesuaikan **Mask Blur** untuk menghaluskan tepi rambut/pakaian.</li>
+            <li>Klik **Proses (AI)**.</li>
+            <li>Klik **Unduh PNG** untuk menyimpan foto formal Anda.</li>
+          </ol>
+        </p>
 
-        <div id="progress-area">
-            <p id="progress-text">AI menganalisis objek dan memisahkan latar...</p>
-            <div id="progress-bar">
-                <div id="progress-fill"></div>
-            </div>
+        <div style="margin-top:15px">
+          <strong style="color: var(--blue);">Detail Teknis (Penting!):</strong>
+          <ul style="margin:8px 0 0 18px; font-size: 13px;">
+            <li>**Kecepatan:** Pemrosesan bergantung pada kecepatan perangkat (CPU/GPU) Anda karena berjalan secara lokal.</li>
+            <li>**Privasi:** Foto Anda **tidak diunggah** ke server manapun, semua komputasi dilakukan di browser.</li>
+            <li>**Teknologi:** Menggunakan model **BodyPix** dari TensorFlow.js untuk segmentasi tubuh manusia.</li>
+          </ul>
         </div>
-
-        <div id="result-card">
-            <h2>✅ Foto Formal Siap!</h2>
-            <div id="ai-output-container">
-                <div id="background-color-layer"></div>
-                <img id="uploaded-image" src="" alt="Foto Anda">
-            </div>
-            <p style="margin-top: 15px; color: #f1c40f;">*Ini adalah simulasi AI. Gunakan editor profesional untuk hasil akhir penting.</p>
-            <button id="telegram-share-button">Pamer Hasil AI Ganti Latar ke @GW_GK</button>
+        
+        <div style="margin-top: 20px;">
+             <button class="btn" id="telegramShare" style="background-color: #0088cc; font-size: 0.9em;">Pamer Hasil AI Ganti Latar ke @GW_GK</button>
         </div>
-
+        
+      </div>
     </div>
 
-    <script>
-        const photoInput = document.getElementById('photo-input');
-        const colorButtons = document.querySelectorAll('.color-button');
-        const processButton = document.getElementById('process-button');
-        const progressArea = document.getElementById('progress-area');
-        const progressFill = document.getElementById('progress-fill');
-        const resultCard = document.getElementById('result-card');
-        const uploadedImage = document.getElementById('uploaded-image');
-        const backgroundColorLayer = document.getElementById('background-color-layer');
-        const telegramButton = document.getElementById('telegram-share-button');
+    <footer>Powered by TensorFlow.js — BodyPix (Client-side)</footer>
+  </main>
 
-        let selectedColorHex = null;
-        let selectedColorName = null;
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.13.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0.5/dist/body-pix.min.js"></script>
 
-        // 1. Pilihan Warna
-        colorButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                colorButtons.forEach(btn => btn.classList.remove('selected'));
-                button.classList.add('selected');
-                selectedColorHex = button.dataset.color;
-                selectedColorName = button.textContent; 
-                
-                if (photoInput.files.length > 0) {
-                    processButton.disabled = false;
-                    processButton.textContent = 'MULAI PROSES AI';
-                }
-            });
+  <script>
+    // Elemen
+    const fileInput = document.getElementById('file');
+    const colorSelect = document.getElementById('color');
+    const processBtn = document.getElementById('processBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const outCanvas = document.getElementById('outCanvas');
+    const blurRange = document.getElementById('blur');
+    const blurVal = document.getElementById('blurVal');
+    const telegramShare = document.getElementById('telegramShare');
+
+    let imageElement = new Image();
+    let net = null;
+    let lastResultDataURL = null;
+
+    blurRange.addEventListener('input', ()=> blurVal.textContent = blurRange.value);
+
+    // 1. Load BodyPix model
+    async function loadModel(){
+      if(net) return net;
+      processBtn.textContent = 'Memuat model AI...';
+      try {
+          net = await bodyPix.load({
+            architecture: 'MobileNetV1',
+            outputStride: 16,
+            multiplier: 0.75,
+            quantBytes: 2
+          });
+          processBtn.textContent = 'Proses (AI)';
+      } catch (error) {
+          console.error("Gagal memuat model:", error);
+          processBtn.textContent = 'Gagal Memuat Model';
+          alert('Gagal memuat model AI. Periksa koneksi internet Anda atau coba lagi.');
+      }
+      return net;
+    }
+
+    // Membaca file lokal ke imageElement
+    fileInput.addEventListener('change', (ev)=>{
+      const f = ev.target.files && ev.target.files[0];
+      if(!f) { 
+        drawPlaceholder(); 
+        downloadBtn.disabled = true;
+        return; 
+      }
+      const url = URL.createObjectURL(f);
+      imageElement = new Image();
+      imageElement.onload = ()=> {
+        // Atur ukuran canvas sesuai gambar saat preview pertama
+        fitCanvasToImage(imageElement, outCanvas, 420, 560);
+        const ctx = outCanvas.getContext('2d');
+        ctx.clearRect(0, 0, outCanvas.width, outCanvas.height);
+        ctx.drawImage(imageElement, 0, 0, outCanvas.width, outCanvas.height);
+        processBtn.disabled = false;
+        downloadBtn.disabled = true;
+      };
+      imageElement.src = url;
+    });
+
+    // Jika belum ada foto, tampilkan placeholder
+    function drawPlaceholder(){
+      const ctx = outCanvas.getContext('2d');
+      const W = outCanvas.width;
+      const H = outCanvas.height;
+      ctx.fillStyle = '#1f2937';
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '14px Poppins, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Unggah foto Anda di sini.', W/2, H/2);
+    }
+
+    // Resize canvas untuk menyesuaikan image while maintain aspect ratio dengan batas maksimum
+    function fitCanvasToImage(img, canvas, maxW=900, maxH=1200){
+      const iw = img.width, ih = img.height;
+      let scale = Math.min(maxW/iw, maxH/ih);
+      // Batasi skala agar tidak lebih dari 1 jika gambar kecil
+      scale = Math.min(scale, 1); 
+      const w = Math.round(iw * scale);
+      const h = Math.round(ih * scale);
+      canvas.width = w;
+      canvas.height = h;
+      return {w,h};
+    }
+
+    // 2. Proses: dapatkan segmentasi, lalu composite
+    async function processImage(){
+      if(!imageElement || !imageElement.src || !imageElement.complete) { alert('Silakan unggah foto dahulu.'); return; }
+      if(!net) { await loadModel(); }
+      if(!net) return;
+
+      processBtn.disabled = true;
+      downloadBtn.disabled = true;
+      processBtn.textContent = 'Memproses... (AI)';
+      
+      try{
+        // Atur ukuran canvas agar sesuai gambar (gunakan resolusi yang lebih tinggi untuk hasil akhir)
+        fitCanvasToImage(imageElement, outCanvas, imageElement.width, imageElement.height);
+
+        // Jalankan segmentasi
+        const segmentation = await net.segmentPerson(imageElement, {
+          internalResolution: 'high', // Gunakan high res untuk hasil terbaik
+          segmentationThreshold: 0.7,
+          maxDetections: 1,
+          scoreThreshold: 0.3,
+          nmsRadius: 20
         });
 
-        // 2. Tampilkan Preview Foto
-        photoInput.addEventListener('change', () => {
-            if (photoInput.files && photoInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    uploadedImage.src = e.target.result;
-                    // Reset styling
-                    uploadedImage.style.transform = 'none'; 
-                    uploadedImage.style.width = 'auto'; 
-                    
-                    if (selectedColorHex) {
-                        processButton.disabled = false;
-                        processButton.textContent = 'MULAI PROSES AI';
-                    }
-                };
-                reader.readAsDataURL(photoInput.files[0]);
-            } else {
-                 processButton.disabled = true;
-            }
-        });
+        // Buat mask image dari segmentation
+        const mask = bodyPix.toMask(segmentation);
+        const ctx = outCanvas.getContext('2d');
 
-        // 3. Mulai Proses AI Palsu
-        processButton.addEventListener('click', startProcess);
-        telegramButton.addEventListener('click', shareTelegram);
+        // Isi background dengan warna pilihan
+        ctx.clearRect(0,0,outCanvas.width, outCanvas.height);
+        ctx.fillStyle = colorSelect.value;
+        ctx.fillRect(0,0,outCanvas.width, outCanvas.height);
 
-        function startProcess() {
-            if (!photoInput.files.length || !selectedColorHex) {
-                alert("Pilih foto dan warna latar dulu!");
-                return;
-            }
-            
-            // Terapkan warna latar belakang yang dipilih ke layer
-            backgroundColorLayer.style.backgroundColor = selectedColorHex;
+        // DrawMask akan menggambar image + mask ke canvas:
+        const opacity = 1.0;
+        const maskBlurAmount = parseInt(blurRange.value,10); 
+        bodyPix.drawMask(
+          outCanvas,             // canvas hasil
+          imageElement,          // image input
+          mask,                  // mask hasil segmentasi
+          opacity,
+          maskBlurAmount,
+          false                  // flipHorizontal
+        );
 
-            resultCard.style.display = 'none';
-            processButton.disabled = true;
-            processButton.textContent = 'AI Sedang Menganalisis...';
-            progressArea.style.display = 'block';
-            progressFill.style.width = '0%';
-            
-            let progress = 0;
-            const interval = setInterval(() => {
-                // Simulasi kecepatan proses AI
-                progress += Math.floor(Math.random() * 10) + 5; 
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(showResult, 500);
-                }
-                progressFill.style.width = `${progress}%`;
-                document.getElementById('progress-text').textContent = `AI Menganalisis dan Mengganti Latar: ${progress}%`;
-            }, 300); 
-        }
+        // Simpan dataURL terakhir
+        lastResultDataURL = outCanvas.toDataURL('image/png');
+        downloadBtn.disabled = false;
 
-        function showResult() {
-            progressArea.style.display = 'none';
-            
-            resultCard.style.display = 'block';
-            processButton.textContent = 'PROSES LAGI DENGAN AI!';
-            processButton.disabled = false;
-            
-            // Scroll ke hasil
-            resultCard.scrollIntoView({ behavior: 'smooth' });
-        }
+      } catch(err){
+        console.error(err);
+        alert('Terjadi kesalahan saat memproses gambar. Pastikan gambar jelas dan berfokus pada satu orang.');
+      } finally {
+        processBtn.disabled = false;
+        processBtn.textContent = 'Proses (AI)';
+      }
+    }
 
-        function shareTelegram() {
-            const shareMessage = `Wow! Aku coba AI Formal BG Tool dan berhasil ganti latar belakang fotoku dengan warna ${selectedColorName} untuk keperluan formal! Coba kamu juga, @GW_GK!`;
-            const url = `https://t.me/GW_GK?text=${encodeURIComponent(shareMessage)}`;
-            window.open(url, '_blank');
-        }
-    </script>
+    // 3. Tombol proses & download
+    processBtn.addEventListener('click', processImage);
+
+    downloadBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      if(!lastResultDataURL){
+         alert('Silakan proses gambar terlebih dahulu.');
+         return;
+      }
+      triggerDownload(lastResultDataURL);
+    });
+
+    function triggerDownload(dataURL){
+      const a = document.createElement('a');
+      a.href = dataURL;
+      const colorName = colorSelect.options[colorSelect.selectedIndex].text.replace(' Formal', '').replace(' ', '_').toLowerCase();
+      a.download = `foto_formal_bg_${colorName}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+    
+    // 4. Tombol Share
+    telegramShare.addEventListener('click', function() {
+        const colorName = colorSelect.options[colorSelect.selectedIndex].text;
+        const shareMessage = `Aku berhasil ganti latar belakang foto formal jadi warna ${colorName} secara otomatis pakai AI Tool ini! Coba kamu juga, @GW_GK!`;
+        const url = `https://t.me/GW_GK?text=${encodeURIComponent(shareMessage)}`;
+        window.open(url, '_blank');
+    });
+
+    // Inisialisasi: panggil loadModel lebih awal
+    loadModel();
+    drawPlaceholder();
+  </script>
 </body>
 </html>
