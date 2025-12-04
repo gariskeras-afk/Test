@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Tebak Lagu Hits YouTube 🎶</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1c1c3a 0%, #0a0a1e 100%);
+            color: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+            min-height: 100vh;
+        }
+        #quiz-box {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #2c3e50;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+        }
+        #question-display {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            background-color: #1e3040;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #ff6b6b;
+        }
+        #youtube-player-container {
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Rasio Video Standar */
+            margin-bottom: 20px;
+            display: none; /* Sembunyikan player di awal */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.2s;
+            border: 1px solid #34495e;
+            background-color: #34495e;
+            color: white;
+            text-align: left;
+        }
+        .option-button:hover:not(:disabled) {
+            background-color: #4a637d;
+        }
+        #result-display {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        #start-button, #next-button, #telegram-share-button {
+            padding: 12px 25px;
+            margin: 10px 5px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 1em;
+        }
+        #start-button { background-color: #2ecc71; color: white; }
+        #next-button { background-color: #3498db; color: white; display: none; }
+        #telegram-share-button { background-color: #0088cc; color: white; display: none; }
+    </style>
+</head>
+<body>
+    <div id="quiz-box">
+        <h1>🎧 Kuis Tebak Lagu Viral 2020-2025 🎧</h1>
+        <p>Tebak lagu hits dari klip video YouTube tersembunyi!</p>
+        
+        <div id="youtube-player-container">
+            <div id="youtube-player"></div>
+        </div>
+        
+        <div id="question-display">Klik "Mulai Kuis" untuk memulai tantangan tebak lagu ini!</div>
+        <div id="options-container"></div>
+        <div id="result-display"></div>
+        
+        <button id="start-button">Mulai Kuis</button>
+        <button id="next-button">Lanjut Pertanyaan</button>
+        <button id="telegram-share-button">Bagikan Skor ke @GW_GK</button>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // Data Pertanyaan (Lagu Hits 2020-2025)
+        const questions = [
+            {
+                q: "Dengarkan klip ini. Lagu hits pop Indonesia yang rilis 2022 ini berjudul:",
+                // ID Video YouTube (Contoh: klip lagu Sial)
+                youtubeId: "vB8k5tJ8-u0", 
+                options: ["Komang", "Sial", "Tertawan Hati", "Hati-Hati di Jalan"],
+                answer: "Sial",
+                startTime: 10, // Mulai putar dari detik ke-10
+                duration: 5    // Putar selama 5 detik
+            },
+            {
+                q: "Ini adalah salah satu 'sound' paling viral di TikTok tahun 2023. Judul lagunya adalah:",
+                // ID Video YouTube (Contoh: klip lagu Rungkad)
+                youtubeId: "W9oXQ4yXw-M", 
+                options: ["Rungkad", "Glimpse of Us", "Asmalibrasi", "Ayam Jago"],
+                answer: "Rungkad",
+                startTime: 5, 
+                duration: 7    
+            },
+            {
+                q: "Lagu dari band rock Indonesia yang viral kembali karena dipakai di film horor:",
+                // ID Video YouTube (Contoh: klip lagu Dulu)
+                youtubeId: "4_8D3i5D0sQ", 
+                options: ["Kisah Klasik", "Dulu", "Bertahan", "Menghapus Jejakmu"],
+                answer: "Dulu",
+                startTime: 20, 
+                duration: 6    
+            }
+        ];
+
+        // Elemen HTML
+        const qDisplay = document.getElementById('question-display');
+        const optionsContainer = document.getElementById('options-container');
+        const resultDisplay = document.getElementById('result-display');
+        const startButton = document.getElementById('start-button');
+        const nextButton = document.getElementById('next-button');
+        const telegramButton = document.getElementById('telegram-share-button');
+        const playerContainer = document.getElementById('youtube-player-container');
+        
+        // Variabel Game
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let player;
+        let stopPlaybackTimeout;
+
+        // --- Fungsi API YouTube Player ---
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: '', // ID akan dimuat saat game dimulai
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 0, // Sembunyikan kontrol video
+                    'disablekb': 1, // Nonaktifkan kontrol keyboard
+                    'rel': 0, // Jangan tampilkan video terkait
+                    'modestbranding': 1, // Branding YouTube minimal
+                    'autoplay': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+        
+        function onPlayerReady(event) {
+            startButton.disabled = false;
+        }
+
+        function onPlayerStateChange(event) {
+            // Jika video mulai diputar
+            if (event.data === YT.PlayerState.PLAYING) {
+                const q = questions[currentQuestionIndex];
+                // Atur timeout untuk menghentikan pemutaran setelah durasi klip
+                stopPlaybackTimeout = setTimeout(() => {
+                    player.stopVideo();
+                    player.seekTo(q.startTime, true); // Reset ke awal klip untuk putar ulang
+                }, q.duration * 1000); 
+            }
+        }
+        
+        // --- Fungsi Kontrol Pemutaran ---
+        function playClue() {
+            if (!player || currentQuestionIndex >= questions.length) return;
+            
+            const q = questions[currentQuestionIndex];
+            
+            // Hentikan timeout sebelumnya jika ada
+            clearTimeout(stopPlaybackTimeout);
+            
+            // Muat video baru (jika ID berbeda) dan putar dari startTime
+            if (player.getVideoData().video_id !== q.youtubeId) {
+                player.loadVideoById(q.youtubeId, q.startTime);
+            } else {
+                player.seekTo(q.startTime, true);
+                player.playVideo();
+            }
+        }
+
+        // --- Fungsi Utama Game ---
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            startButton.style.display = 'none';
+            telegramButton.style.display = 'none';
+            resultDisplay.textContent = '';
+            playerContainer.style.display = 'block'; // Tampilkan player
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showFinalResult();
+                return;
+            }
+            
+            const q = questions[currentQuestionIndex];
+            
+            qDisplay.innerHTML = `<strong>Soal ${currentQuestionIndex + 1}:</strong> ${q.q}`;
+            optionsContainer.innerHTML = '';
+            nextButton.style.display = 'none';
+            resultDisplay.textContent = '';
+            
+            // Muat video klip untuk soal ini dan putar
+            if (player.getVideoData().video_id !== q.youtubeId) {
+                 player.loadVideoById(q.youtubeId, q.startTime);
+            } else {
+                player.seekTo(q.startTime, true);
+            }
+            player.pauseVideo();
+            
+            // Tampilkan tombol opsi
+            q.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+                button.addEventListener('click', () => checkAnswer(button, option, q.answer));
+                optionsContainer.appendChild(button);
+            });
+            
+            // Tambahkan tombol play manual
+            const playAgainButton = document.createElement('button');
+            playAgainButton.textContent = '🔊 Putar Ulang Klip';
+            playAgainButton.id = 'play-again-button';
+            playAgainButton.style.cssText = 'padding: 10px 20px; background-color: #1abc9c; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 15px;';
+            playAgainButton.addEventListener('click', playClue);
+            optionsContainer.insertBefore(playAgainButton, optionsContainer.firstChild);
+
+            // Putar klip otomatis saat soal dimuat
+            playClue();
+        }
+
+        function checkAnswer(clickedButton, selectedOption, correctAnswer) {
+            // Nonaktifkan semua tombol
+            Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
+            
+            // Hentikan klip
+            clearTimeout(stopPlaybackTimeout);
+            player.stopVideo();
+            
+            if (selectedOption === correctAnswer) {
+                score++;
+                resultDisplay.textContent = '✅ Benar! Anda Peka Musik Viral.';
+                clickedButton.style.backgroundColor = '#1abc9c'; // Hijau benar
+            } else {
+                resultDisplay.innerHTML = `❌ Salah! Judul yang benar adalah: **${correctAnswer}**`;
+                clickedButton.style.backgroundColor = '#e74c3c'; // Merah salah
+                // Tandai jawaban benar
+                Array.from(optionsContainer.children).find(btn => btn.textContent === correctAnswer).style.backgroundColor = '#2ecc71';
+            }
+            
+            nextButton.style.display = 'block';
+            nextButton.textContent = currentQuestionIndex < questions.length - 1 ? 'Lanjut Pertanyaan' : 'Lihat Hasil Akhir';
+        }
+
+        function showFinalResult() {
+            qDisplay.textContent = '--- KUIS SELESAI ---';
+            optionsContainer.innerHTML = '';
+            nextButton.style.display = 'none';
+            playerContainer.style.display = 'none';
+
+            let finalStatus = (score === questions.length) ? '🥇 MUSIKOLOG VIRAL SEJATI!' : '🎧 Masih Perlu Banyak Mendengar Lagu Hits.';
+            
+            resultDisplay.innerHTML = `
+                Total skormu: <span style="color:#ff6b6b; font-size:1.5em;">${score}</span> dari ${questions.length}.
+                <br><br><span style="color:#2ecc71;">${finalStatus}</span>
+            `;
+            
+            startButton.textContent = 'Ulangi Kuis';
+            startButton.style.display = 'block';
+            telegramButton.style.display = 'block';
+        }
+
+        function shareTelegram() {
+            const finalStatus = (score === questions.length) ? 'MUSIKOLOG VIRAL SEJATI' : 'Perlu Banyak Mendengar Lagu Hits';
+            const shareMessage = `Aku menyelesaikan Kuis Tebak Lagu Viral (YouTube) dengan skor ${score}/${questions.length}! Aku adalah ${finalStatus}. Coba kamu, @GW_GK!`;
+            const url = `https://t.me/GW_GK?text=${encodeURIComponent(shareMessage)}`;
+            window.open(url, '_blank');
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', startGame);
+        nextButton.addEventListener('click', () => { currentQuestionIndex++; loadQuestion(); });
+        telegramButton.addEventListener('click', shareTelegram);
+
+        // Inisialisasi tampilan awal
+        optionsContainer.innerHTML = '<p style="color:#bdc3c7;">Klik "Mulai Kuis" untuk memulai tantangan tebak lagu ini!</p>';
+        startButton.disabled = true; // Nonaktifkan sampai player YouTube siap
+    </script>
+</body>
+</html>
