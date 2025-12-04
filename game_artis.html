@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game 12: Artis Look-Alike Prank Scanner</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #434343 0%, black 100%); /* Tema Dark/Scanner */
+            color: #ecf0f1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        #scanner-container {
+            background-color: #1c1c1c;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); /* Neon Cyan Shadow */
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #00ffff; /* Neon Cyan */
+            text-shadow: 0 0 5px #00ffff;
+            margin-bottom: 5px;
+        }
+        #instruction {
+            color: #bdc3c7;
+            margin-bottom: 25px;
+        }
+        #file-input-container {
+            margin-bottom: 20px;
+            border: 2px dashed #00ffff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        #scan-button {
+            padding: 12px 30px;
+            background-color: #00ffff;
+            color: black;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        #scan-button:hover {
+            background-color: #6effff;
+        }
+        
+        /* PROGRESS BAR STYLING */
+        #progress-area {
+            margin-top: 30px;
+            display: none; /* Sembunyikan di awal */
+        }
+        #progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #00ffff;
+            transition: width 0.3s linear;
+        }
+        #progress-text {
+            color: #00ffff;
+        }
+
+        /* RESULT CARD STYLING */
+        #result-card {
+            background-color: #2c3e50;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border: 3px solid #f39c12; /* Oranye Hasil */
+            display: none;
+        }
+        #match-name {
+            font-size: 2em;
+            color: #f39c12;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        #match-percent {
+            font-size: 3em;
+            color: #2ecc71; /* Hijau Sukses */
+            font-weight: 800;
+        }
+        #telegram-share-button {
+            background-color: #0088cc;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            margin-top: 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #kembali {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ffff;
+            text-decoration: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" id="kembali">← Menu</a>
+    
+    <div id="scanner-container">
+        <h1>📸 Artis Look-Alike Scanner</h1>
+        <p id="instruction">Unggah foto wajahmu dan lihat siapa kembaran artis Indonesia-mu!</p>
+
+        <div id="file-input-container">
+            <input type="file" id="photo-input" accept="image/*" required>
+        </div>
+
+        <button id="scan-button">SCAN WAJAH!</button>
+
+        <div id="progress-area">
+            <p id="progress-text">Menganalisis kemiripan...</p>
+            <div id="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+        </div>
+
+        <div id="result-card">
+            <p>Kemiripan Wajah Ditemukan!</p>
+            <div id="match-percent">99%</div>
+            <p>Anda adalah kembaran:</p>
+            <div id="match-name"></div>
+            <button id="telegram-share-button">Pamer Kembaran Artis-ku ke @GW_GK</button>
+        </div>
+
+    </div>
+
+    <script>
+        const artisList = [
+            "Nicholas Saputra", "Dian Sastro", "Iqbaal Ramadhan", "Reza Rahadian", 
+            "Luna Maya", "Chelsea Islan", "Chicco Jerikho", "Prilly Latuconsina",
+            "Tulus", "Maudy Ayunda", "Jefri Nichol", "Raline Shah"
+        ];
+        
+        const photoInput = document.getElementById('photo-input');
+        const scanButton = document.getElementById('scan-button');
+        const progressArea = document.getElementById('progress-area');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const resultCard = document.getElementById('result-card');
+        const matchName = document.getElementById('match-name');
+        const matchPercent = document.getElementById('match-percent');
+        const telegramButton = document.getElementById('telegram-share-button');
+
+        scanButton.addEventListener('click', startScan);
+        telegramButton.addEventListener('click', shareTelegram);
+
+        function startScan() {
+            if (!photoInput.files.length) {
+                alert("Upload foto wajahmu dulu, bestie!");
+                return;
+            }
+            
+            // RESET TAMPILAN
+            resultCard.style.display = 'none';
+            scanButton.disabled = true;
+            scanButton.textContent = 'Menganalisis...';
+            progressArea.style.display = 'block';
+            progressFill.style.width = '0%';
+            
+            // FAKE PROGRESS (Simulasi)
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 10) + 5; // Penambahan random
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(showResult, 500);
+                }
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `Analisis Kemiripan: ${progress}%`;
+            }, 300); 
+        }
+
+        function showResult() {
+            progressArea.style.display = 'none';
+            
+            // Randomize Result
+            const randomArtis = artisList[Math.floor(Math.random() * artisList.length)];
+            const randomPercent = (Math.random() * 15) + 85; // Selalu tinggi (85% - 100%)
+            const finalPercent = Math.round(randomPercent) + '%';
+            
+            matchName.textContent = randomArtis;
+            matchPercent.textContent = finalPercent;
+            
+            resultCard.style.display = 'block';
+            scanButton.textContent = 'SCAN WAJAH LAGI!';
+            scanButton.disabled = false;
+        }
+
+        function shareTelegram() {
+            const name = matchName.textContent;
+            const percent = matchPercent.textContent;
+            const shareMessage = `WAH! Aku baru saja di SCAN dan ternyata ${percent} mirip ${name}! Aku adalah kembarannya! Coba scan wajah kamu, @GW_GK!`;
+            const url = `https://t.me/GW_GK?text=${encodeURIComponent(shareMessage)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
