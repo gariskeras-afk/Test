@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Kraepelin: Uji Fokus Penjumlahan</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #34495e; /* Biru Tua */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        #main-container {
+            background-color: #2c3e50;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            color: #ecf0f1;
+            margin-bottom: 5px;
+        }
+        #timer-display {
+            font-size: 2em;
+            color: #e74c3c; /* Merah Timer */
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        #score-display {
+            font-size: 1.2em;
+            color: #2ecc71; /* Hijau Skor */
+            margin-bottom: 20px;
+        }
+        #number-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 350px; /* Tinggi Kolom */
+            overflow: hidden; /* Penting untuk simulasi kolom Kraepelin */
+            margin-bottom: 15px;
+            border: 2px solid #7f8c8d;
+            border-radius: 5px;
+            position: relative;
+        }
+        .number-line {
+            padding: 5px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+            height: 25px;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.1s;
+        }
+        .focus-number {
+            color: #f1c40f; /* Kuning Fokus */
+        }
+        #answer-input {
+            width: 50px;
+            padding: 10px;
+            font-size: 1.5em;
+            text-align: center;
+            border: 3px solid #3498db;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #start-button, #telegram-share-button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        #start-button {
+            background-color: #3498db;
+            color: white;
+        }
+        #telegram-share-button {
+            background-color: #0088cc;
+            color: white;
+            display: none;
+        }
+        #kembali {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #f1c40f;
+            text-decoration: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" id="kembali">← Menu</a>
+    <div id="main-container">
+        <h1>📊 Kraepelin Speed Test</h1>
+        <p>Aturan: Tambahkan dua angka yang berdekatan dan ketik **digit terakhir** dari hasilnya.</p>
+        
+        <div id="timer-display">Waktu: 60s</div>
+        <div id="score-display">Skor: 0 | Kesalahan: 0</div>
+
+        <div id="number-column">
+            </div>
+
+        <input type="number" id="answer-input" placeholder="0-9" maxlength="1" disabled>
+
+        <button id="start-button">Mulai Tes (60 Detik)</button>
+        <button id="telegram-share-button">Kirim Skor Kraepelin ke @GW_GK</button>
+    </div>
+
+    <script>
+        const TIME_LIMIT = 60; // Detik
+        const TOTAL_NUMBERS = 500; // Jumlah angka yang akan dibuat
+        
+        const numberColumn = document.getElementById('number-column');
+        const answerInput = document.getElementById('answer-input');
+        const timerDisplay = document.getElementById('timer-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const startButton = document.getElementById('start-button');
+        const telegramButton = document.getElementById('telegram-share-button');
+
+        let numbers = [];
+        let score = 0;
+        let errors = 0;
+        let currentPosition = 0; // Baris yang sedang dikerjakan
+        let timer;
+        let timeLeft = TIME_LIMIT;
+        let isGameActive = false;
+
+        startButton.addEventListener('click', initializeGame);
+        answerInput.addEventListener('input', handleAnswer);
+        telegramButton.addEventListener('click', shareTelegram);
+
+        function generateNumbers() {
+            numbers = [];
+            for (let i = 0; i < TOTAL_NUMBERS; i++) {
+                numbers.push(Math.floor(Math.random() * 10)); // Angka 0-9
+            }
+        }
+
+        function renderColumn() {
+            numberColumn.innerHTML = '';
+            numbers.forEach((num, index) => {
+                const line = document.createElement('div');
+                line.classList.add('number-line');
+                line.textContent = num;
+                
+                // Tandai angka yang sedang menjadi fokus (angka di atas dan di bawah)
+                if (index === currentPosition || index === currentPosition + 1) {
+                    line.classList.add('focus-number');
+                }
+                
+                numberColumn.appendChild(line);
+            });
+            
+            // Atur scroll agar posisi yang dikerjakan ada di tengah/atas
+            const scrollPos = currentPosition * 35; // 35px adalah perkiraan tinggi per baris
+            numberColumn.scrollTop = scrollPos - 150; 
+        }
+
+        function initializeGame() {
+            if (isGameActive) return;
+            
+            generateNumbers();
+            score = 0;
+            errors = 0;
+            currentPosition = 0;
+            timeLeft = TIME_LIMIT;
+            isGameActive = true;
+            answerInput.value = '';
+            answerInput.disabled = false;
+            answerInput.focus();
+            startButton.style.display = 'none';
+            telegramButton.style.display = 'none';
+
+            renderColumn();
+            updateScoreDisplay();
+            startTimer();
+        }
+
+        function startTimer() {
+            timerDisplay.textContent = `Waktu: ${timeLeft}s`;
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Waktu: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = `Skor: ${score} | Kesalahan: ${errors}`;
+        }
+
+        function handleAnswer(event) {
+            if (!isGameActive) return;
+            
+            const input = event.target.value;
+            if (input.length === 1) {
+                const num1 = numbers[currentPosition];
+                const num2 = numbers[currentPosition + 1];
+                
+                // Penjumlahan Kraepelin: digit terakhir
+                const correctAnswer = (num1 + num2) % 10;
+                const submittedAnswer = parseInt(input);
+
+                if (submittedAnswer === correctAnswer) {
+                    score++;
+                } else {
+                    errors++;
+                }
+                
+                // Lanjut ke baris berikutnya
+                currentPosition++;
+                updateScoreDisplay();
+
+                // Cek apakah kolom sudah habis
+                if (currentPosition >= numbers.length - 1) {
+                    endGame();
+                    return;
+                }
+                
+                // Render ulang dan kosongkan input
+                renderColumn();
+                answerInput.value = '';
+            }
+        }
+
+        function endGame() {
+            isGameActive = false;
+            answerInput.disabled = true;
+            clearInterval(timer);
+            timerDisplay.textContent = "WAKTU HABIS!";
+            
+            const message = `Tes Selesai! Skor Akhir: ${score} (Kesalahan: ${errors})`;
+            scoreDisplay.textContent = message;
+            
+            startButton.textContent = 'Coba Lagi';
+            startButton.style.display = 'block';
+            telegramButton.style.display = 'block';
+        }
+
+        function shareTelegram() {
+            const username = 'GW_GK';
+            const shareMessage = `Aku menyelesaikan Tes Kraepelin dengan *Skor ${score}* dan ${errors} kesalahan dalam 60 detik! Coba kamu, @GW_GK!`;
+            const url = `https://t.me/${username}?text=${encodeURIComponent(shareMessage)}`;
+            window.open(url, '_blank');
+        }
+
+        // Tampilkan kolom kosong saat pertama kali dimuat
+        generateNumbers();
+        renderColumn();
+        updateScoreDisplay();
+    </script>
+</body>
+</html>
