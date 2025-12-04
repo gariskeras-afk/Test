@@ -39,7 +39,7 @@
         }
         #youtube-player-container {
             width: 100%;
-            aspect-ratio: 16 / 9; /* Rasio Video Standar */
+            aspect-ratio: 16 / 9; 
             margin-bottom: 20px;
             display: none; 
             border-radius: 8px;
@@ -102,11 +102,13 @@
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
-        // Data Pertanyaan (Lagu Hits 2020-2025)
+        // --- DATA PERTANYAAN (GUNAKAN ARRAY UNTUK MULTI-ID) ---
         const questions = [
             {
-                q: "Dengarkan klip ini. Lagu hits pop Indonesia yang rilis 2022 ini berjudul:",
-                youtubeId: "vB8k5tJ8-u0", 
+                q: "Dengarkan klip ini. Lagu hits pop Mahalini yang rilis 2023 ini berjudul:",
+                // Masukkan beberapa ID. Sistem akan mencoba ID pertama, jika error akan mencoba yang kedua, dst.
+                youtubeIds: ["AzHjARa84bI", "vB8k5tJ8-u0"], // Lirik/Karaoke lebih dulu
+                currentIdIndex: 0, // Indeks ID yang sedang dicoba
                 options: ["Komang", "Sial", "Tertawan Hati", "Hati-Hati di Jalan"],
                 answer: "Sial",
                 startTime: 10, 
@@ -114,15 +116,17 @@
             },
             {
                 q: "Ini adalah salah satu 'sound' paling viral di TikTok tahun 2023. Judul lagunya adalah:",
-                youtubeId: "W9oXQ4yXw-M", 
+                youtubeIds: ["wIo9gS0EKhE", "Tzzdu68zbvQ"], // Lirik/Cover lebih dulu
+                currentIdIndex: 0,
                 options: ["Rungkad", "Glimpse of Us", "Asmalibrasi", "Ayam Jago"],
                 answer: "Rungkad",
                 startTime: 5, 
                 duration: 7    
             },
             {
-                q: "Lagu dari band rock Indonesia yang viral kembali karena dipakai di film horor:",
-                youtubeId: "4_8D3i5D0sQ", 
+                q: "Lagu dari Danar Widianto yang viral kembali karena dipakai di film horor:",
+                youtubeIds: ["RY1zQHjUG_Q", "pz9bGfyVlXQ"], 
+                currentIdIndex: 0,
                 options: ["Kisah Klasik", "Dulu", "Bertahan", "Menghapus Jejakmu"],
                 answer: "Dulu",
                 startTime: 20, 
@@ -145,20 +149,35 @@
         let stopPlaybackTimeout;
         let playAgainButton;
 
-        // --- HANDLER ERROR PLAYER YOUTUBE BARU ---
+        // --- HANDLER ERROR PLAYER YOUTUBE (Auto-ganti ID jika error) ---
         function onPlayerError(event) {
-            console.error("YouTube Player Error Code:", event.data);
+            const q = questions[currentQuestionIndex];
             
-            // Tampilkan pesan error dan auto-advance
-            resultDisplay.innerHTML = `<span style="color: #e74c3c;">❌ Video Soal ${currentQuestionIndex + 1} Gagal Dimuat! (${event.data}) Otomatis Ganti...</span>`;
-            
-            // Auto-advance ke pertanyaan berikutnya
-            currentQuestionIndex++;
-            
-            // Beri jeda 1.5 detik agar pengguna sempat membaca pesan error
-            setTimeout(() => {
-                loadQuestion();
-            }, 1500); 
+            // Coba ID berikutnya
+            q.currentIdIndex++;
+
+            if (q.currentIdIndex < q.youtubeIds.length) {
+                // Ada ID alternatif, coba muat ID berikutnya
+                resultDisplay.innerHTML = `<span style="color: #f39c12;">⚠️ Video Soal ${currentQuestionIndex + 1} Gagal Dimuat. Mencoba ID Alternatif (${q.currentIdIndex + 1}/${q.youtubeIds.length})...</span>`;
+                console.warn(`Error code ${event.data}. Trying next ID: ${q.youtubeIds[q.currentIdIndex]}`);
+                
+                // Muat ulang video dengan ID berikutnya
+                setTimeout(() => {
+                    player.loadVideoById(q.youtubeIds[q.currentIdIndex], q.startTime);
+                    playClue();
+                }, 1000); 
+
+            } else {
+                // Semua ID gagal
+                console.error("Semua ID video gagal dimuat:", q.youtubeIds);
+                resultDisplay.innerHTML = `<span style="color: #e74c3c;">❌ Error: Semua Video Soal ${currentQuestionIndex + 1} Gagal Dimuat. Otomatis Ganti Soal...</span>`;
+                
+                // Pindah ke soal berikutnya
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 2000); 
+            }
         }
         
         // --- Fungsi API YouTube Player ---
@@ -179,7 +198,7 @@
                 events: {
                     'onReady': onPlayerReady,
                     'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError // DAFTARKAN HANDLER ERROR DI SINI
+                    'onError': onPlayerError 
                 }
             });
         }
@@ -209,8 +228,11 @@
             
             clearTimeout(stopPlaybackTimeout);
             
-            if (player.getVideoData().video_id !== q.youtubeId) {
-                player.loadVideoById(q.youtubeId, q.startTime);
+            // Dapatkan ID video yang sedang dicoba
+            const videoId = q.youtubeIds[q.currentIdIndex];
+
+            if (player.getVideoData().video_id !== videoId) {
+                player.loadVideoById(videoId, q.startTime);
             } else {
                 player.seekTo(q.startTime, true);
                 player.playVideo();
@@ -229,8 +251,11 @@
             resultDisplay.textContent = '';
             playerContainer.style.display = 'block'; 
             
+            // Reset semua indeks video yang dicoba
+            questions.forEach(q => q.currentIdIndex = 0);
+            
             const firstQ = questions[0];
-            player.loadVideoById(firstQ.youtubeId, firstQ.startTime);
+            player.loadVideoById(firstQ.youtubeIds[0], firstQ.startTime);
             
             setTimeout(loadQuestion, 500); 
         }
@@ -247,7 +272,8 @@
             optionsContainer.innerHTML = '';
             nextButton.style.display = 'none';
             
-            player.loadVideoById(q.youtubeId, q.startTime);
+            // Muat video pertama (atau video yang terakhir dicoba jika error)
+            player.loadVideoById(q.youtubeIds[q.currentIdIndex], q.startTime);
             
             q.options.forEach(option => {
                 const button = document.createElement('button');
@@ -291,7 +317,8 @@
             optionsContainer.innerHTML = '';
             nextButton.style.display = 'none';
             playerContainer.style.display = 'none';
-            
+            resultDisplay.textContent = ''; 
+
             let finalStatus = (score === questions.length) ? '🥇 MUSIKOLOG VIRAL SEJATI!' : '🎧 Masih Perlu Banyak Mendengar Lagu Hits.';
             
             resultDisplay.innerHTML = `
