@@ -1,398 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AI Formal BG Tool: Hapus Background Otomatis</title>
-  <meta name="description" content="Upload foto, AI hapus background, ganti warna merah atau biru. Tanpa server. Cocok untuk GitHub Pages." />
+  <meta charset="UTF-8">
+  <title>AI Ganti Background</title>
   <style>
-    :root{
-      --glass: rgba(255,255,255,0.06);
-      --panel-w: 980px;
-      --accent: #fff;
-      --bg-color: #111827;
-      --blue: #6495ed;
-      --yellow: #f1c40f;
-    }
-    *{box-sizing:border-box}
-    body{
-        margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #1f1c2c 0%, #0d0c13 100%);
-        color:var(--accent);padding:28px
-    }
-    .wrap{
-        width:100%;max-width:var(--panel-w);
-        background:var(--bg-color);
-        color:var(--accent);border-radius:12px;
-        padding:25px;
-        box-shadow:0 10px 30px rgba(15,23,42,0.6)
-    }
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px; flex-wrap: wrap;}
-    header h1{font-size:20px;margin:0; color: var(--blue);}
-    /* PENTING: Tambahkan flex-direction: column di sini untuk mengatur input baru */
-    .controls{display:flex;gap:15px;align-items:flex-end;margin-top:20px;flex-wrap:wrap; flex-direction: row;} 
-    /* Style untuk div input yang baru */
-    .control-group { display: flex; flex-direction: column; flex-grow: 1; min-width: 200px; }
-    .action-buttons { display:flex;gap:10px;align-items:center; }
-    
-    .card{display:flex;gap:25px;margin-top:25px;align-items:flex-start}
-    .left{flex:0 0 420px; max-width: 100%;}
-    .preview{
-        width:100%;height:560px;
-        background:#333;
-        border-radius:8px;overflow:hidden;
-        display:flex;align-items:center;justify-content:center;
-        box-shadow: 0 0 10px rgba(100, 149, 237, 0.5);
-    }
-    canvas{display:block;max-width:100%;height:auto}
-    .right{flex:1;min-width:0;text-align: left;}
-    label{font-size:14px;display:block;margin-bottom:6px;font-weight: 600; color: var(--yellow);}
-    input[type=file]{display:block; margin-top: 5px;}
-    select, button, input[type=range]{padding:10px 15px;border-radius:8px;border:0;font-weight:600; font-family: 'Poppins', sans-serif;}
-    .btn{
-        background:var(--blue);
-        color:var(--accent);
-        cursor:pointer;
-        transition: background 0.2s;
-    }
-    .btn:hover{background:#4169e1;}
-    .btn:disabled{background:#555; cursor: not-allowed;}
-    
-    .note{margin-top:12px;color:rgba(255,255,255,0.8);font-size:14px}
-    footer{margin-top:20px;color:rgba(255,255,255,0.6);font-size:12px}
-    
-    #blurVal{color: var(--yellow);}
-    
-    #back-btn {
-        position: absolute; top: 20px; left: 20px;
-        color: var(--yellow); text-decoration: none; z-index: 100;
-        font-size: 1em;
-    }
-    
-    /* Media Queries */
-    @media (max-width:980px){
-        .card{flex-direction:column;align-items:center}
-        .left{flex-basis:100%; width: 100%;}
-        .preview{height: auto; min-height: 400px;}
-        .controls{justify-content: center; align-items: stretch; flex-direction: column;}
-        .control-group { width: 100%; margin-bottom: 10px; }
-        .action-buttons { width: 100%; justify-content: space-around; }
-    }
-    @media (max-width:500px){
-        .wrap{padding: 15px;}
-        .preview{height: 350px;}
-        .controls{gap: 10px; flex-direction: column; align-items: stretch;}
-        select, button { width: 100%; }
-        .action-buttons { flex-direction: column; gap: 8px; }
-    }
+    body { font-family: Arial; padding: 20px; }
+    button { padding: 10px 16px; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <a href="index.html" id="back-btn">← Menu Utama</a>
-  
-  <main class="wrap" role="main">
-    <header>
-      <h1>📸 Hapus Background Otomatis (AI) — Formal Red/Blue</h1>
-      <div style="font-size:13px;opacity:0.8; margin-top: 5px;">*Model AI dijalankan sepenuhnya di browser Anda (privat)</div>
-    </header>
 
-    <section class="controls">
-      <div class="control-group">
-        <label for="file">Unggah Foto Potret (JPG/PNG):</label>
-        <input id="file" type="file" accept="image/*">
-      </div>
+<h2>AI Hapus Background & Ganti Warna</h2>
 
-      <div class="control-group">
-        <label for="color">Pilih Warna Background:</label>
-        <select id="color">
-          <option value="#8B0000">Merah Formal</option>
-          <option value="#0B3D91">Biru Formal</option>
-          <option value="#ffffff">Putih</option>
-          <option value="#000000">Hitam</option>
-          <option value="custom_image">Gambar Kustom/Gemini</option>
-        </select>
-      </div>
-      
-      <div id="customBgUploader" class="control-group" style="display:none;">
-        <label for="bgFile">Unggah Gambar Background Kustom:</label>
-        <input id="bgFile" type="file" accept="image/*">
-      </div>
-      <div class="control-group">
-        <label for="blur">Mask Blur (Smoothing Tepi): <span id="blurVal">3</span>px</label>
-        <input id="blur" type="range" min="0" max="20" value="3" style="width: 100%;">
-      </div>
+<input type="file" id="imageInput" accept="image/*"><br>
+<select id="colorSelect">
+  <option value="red">Merah</option>
+  <option value="blue">Biru</option>
+</select><br>
 
-      <div class="action-buttons control-group">
-        <button class="btn" id="processBtn">Proses (AI)</button>
-        <button class="btn" id="downloadBtn" disabled>Unduh PNG</button>
-      </div>
-    </section>
+<button onclick="edit()">Proses dengan AI</button>
 
-    <div class="card">
-      <div class="left">
-        <div class="preview" aria-live="polite">
-          <canvas id="outCanvas" width="420" height="560" role="img" aria-label="Preview hasil"></canvas>
-        </div>
-      </div>
+<h3>Hasil:</h3>
+<img id="result" style="max-width:300px">
 
-      <div class="right">
-        <p class="note">
-          **Petunjuk Cepat:**
-          <ol style="margin:8px 0 12px 18px">
-            <li>Unggah foto potret (subjek tunggal, fokus).</li>
-            <li>Pilih warna latar (atau **Gambar Kustom**).</li>
-            <li>Jika memilih kustom, unggah gambar *background* kustom Anda.</li>
-            <li>Sesuaikan **Mask Blur** untuk menghaluskan tepi.</li>
-            <li>Klik **Proses (AI)**.</li>
-            <li>Klik **Unduh PNG** untuk menyimpan foto formal Anda.</li>
-          </ol>
-        </p>
+<script>
+async function edit() {
+  const file = document.getElementById("imageInput").files[0];
+  const color = document.getElementById("colorSelect").value;
 
-        <div style="margin-top:15px">
-          <strong style="color: var(--blue);">Detail Teknis (Penting!):</strong>
-          <ul style="margin:8px 0 0 18px; font-size: 13px;">
-            <li>**Kecepatan:** Pemrosesan bergantung pada kecepatan perangkat Anda karena berjalan secara lokal.</li>
-            <li>**Privasi:** Foto Anda **tidak diunggah** ke server manapun, semua komputasi dilakukan di browser.</li>
-            <li>**Teknologi:** Menggunakan model **BodyPix** dari TensorFlow.js.</li>
-          </ul>
-        </div>
-        
-        <div style="margin-top: 20px;">
-             <button class="btn" id="telegramShare" style="background-color: #0088cc; font-size: 0.9em;">Pamer Hasil AI Ganti Latar ke @GW_GK</button>
-        </div>
-        
-      </div>
-    </div>
+  const form = new FormData();
+  form.append("image", file);
+  form.append("color", color);
 
-    <footer>Powered by TensorFlow.js — BodyPix (Client-side)</footer>
-  </main>
+  const workerURL = "https://gk.workers.dev";
 
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.13.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0.5/dist/body-pix.min.js"></script>
+  const response = await fetch(workerURL, {
+    method: "POST",
+    body: form
+  });
 
-  <script>
-    // Elemen
-    const fileInput = document.getElementById('file');
-    const colorSelect = document.getElementById('color');
-    const processBtn = document.getElementById('processBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const outCanvas = document.getElementById('outCanvas');
-    const blurRange = document.getElementById('blur');
-    const blurVal = document.getElementById('blurVal');
-    const telegramShare = document.getElementById('telegramShare');
-    
-    // ELEMEN BARU UNTUK BACKGROUND KUSTOM
-    const bgFileInput = document.getElementById('bgFile');
-    const customBgUploader = document.getElementById('customBgUploader'); 
+  const blob = await response.blob();
+  document.getElementById("result").src = URL.createObjectURL(blob);
+}
+</script>
 
-    let imageElement = new Image();
-    let customBackgroundImage = new Image(); // Variabel baru untuk gambar background kustom
-    let net = null;
-    let lastResultDataURL = null;
-
-    blurRange.addEventListener('input', ()=> blurVal.textContent = blurRange.value);
-
-    // 1. Load BodyPix model
-    async function loadModel(){
-      if(net) return net;
-      processBtn.textContent = 'Memuat model AI...';
-      try {
-          net = await bodyPix.load({
-            architecture: 'MobileNetV1',
-            outputStride: 16,
-            multiplier: 0.75,
-            quantBytes: 2
-          });
-          processBtn.textContent = 'Proses (AI)';
-      } catch (error) {
-          console.error("Gagal memuat model:", error);
-          processBtn.textContent = 'Gagal Memuat Model';
-          alert('Gagal memuat model AI. Periksa koneksi internet Anda atau coba lagi.');
-      }
-      return net;
-    }
-
-    // Membaca file lokal foto subjek ke imageElement
-    fileInput.addEventListener('change', (ev)=>{
-      const f = ev.target.files && ev.target.files[0];
-      if(!f) { 
-        drawPlaceholder(); 
-        downloadBtn.disabled = true;
-        return; 
-      }
-      const url = URL.createObjectURL(f);
-      imageElement = new Image();
-      imageElement.onload = ()=> {
-        fitCanvasToImage(imageElement, outCanvas, 420, 560);
-        const ctx = outCanvas.getContext('2d');
-        ctx.clearRect(0, 0, outCanvas.width, outCanvas.height);
-        ctx.drawImage(imageElement, 0, 0, outCanvas.width, outCanvas.height);
-        processBtn.disabled = false;
-        downloadBtn.disabled = true;
-      };
-      imageElement.src = url;
-    });
-    
-    // Membaca file lokal gambar background kustom ke customBackgroundImage
-    bgFileInput.addEventListener('change', (ev) => {
-        const f = ev.target.files && ev.target.files[0];
-        if (!f) return;
-        const url = URL.createObjectURL(f);
-        customBackgroundImage = new Image();
-        customBackgroundImage.onload = () => {
-            console.log('Gambar background kustom berhasil dimuat.');
-            // Jika foto subjek sudah ada, bisa langsung proses
-            if (imageElement.src && imageElement.complete) processBtn.disabled = false;
-        };
-        customBackgroundImage.src = url;
-    });
-
-    // Menampilkan input file background kustom jika opsi custom_image dipilih
-    colorSelect.addEventListener('change', (e) => {
-        if (e.target.value === 'custom_image') {
-            customBgUploader.style.display = 'block';
-        } else {
-            customBgUploader.style.display = 'none';
-        }
-        downloadBtn.disabled = true;
-    });
-
-
-    // Jika belum ada foto, tampilkan placeholder
-    function drawPlaceholder(){
-      const ctx = outCanvas.getContext('2d');
-      const W = outCanvas.width;
-      const H = outCanvas.height;
-      ctx.fillStyle = '#1f2937';
-      ctx.fillRect(0,0,W,H);
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = '14px Poppins, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('Unggah foto Anda di sini.', W/2, H/2);
-    }
-
-    // Resize canvas untuk menyesuaikan image while maintain aspect ratio dengan batas maksimum
-    function fitCanvasToImage(img, canvas, maxW=900, maxH=1200){
-      const iw = img.width, ih = img.height;
-      let scale = Math.min(maxW/iw, maxH/ih);
-      // Batasi skala agar tidak lebih dari 1 jika gambar kecil
-      scale = Math.min(scale, 1); 
-      const w = Math.round(iw * scale);
-      const h = Math.round(ih * scale);
-      canvas.width = w;
-      canvas.height = h;
-      return {w,h};
-    }
-
-    // 2. Proses: dapatkan segmentasi, lalu composite
-    async function processImage(){
-      if(!imageElement || !imageElement.src || !imageElement.complete) { alert('Silakan unggah foto dahulu.'); return; }
-      if(colorSelect.value === 'custom_image' && (!customBackgroundImage.src || !customBackgroundImage.complete)){
-          alert('Anda memilih background kustom, silakan unggah gambar background kustom Anda.');
-          return;
-      }
-      if(!net) { await loadModel(); }
-      if(!net) return;
-
-      processBtn.disabled = true;
-      downloadBtn.disabled = true;
-      processBtn.textContent = 'Memproses... (AI)';
-      
-      try{
-        // Atur ukuran canvas agar sesuai gambar (gunakan resolusi yang lebih tinggi untuk hasil akhir)
-        fitCanvasToImage(imageElement, outCanvas, imageElement.width, imageElement.height);
-
-        // Jalankan segmentasi
-        const segmentation = await net.segmentPerson(imageElement, {
-          internalResolution: 'high',
-          segmentationThreshold: 0.7,
-          maxDetections: 1,
-          scoreThreshold: 0.3,
-          nmsRadius: 20
-        });
-
-        // Buat mask image dari segmentation
-        const mask = bodyPix.toMask(segmentation);
-        const ctx = outCanvas.getContext('2d');
-        const bgColor = colorSelect.value;
-
-        // --- MENGGAMBAR BACKGROUND (Warna Solid ATAU Gambar Kustom) ---
-        ctx.clearRect(0,0,outCanvas.width, outCanvas.height);
-        
-        if (bgColor === 'custom_image' && customBackgroundImage.complete) {
-            // Mengisi canvas dengan gambar background kustom
-            // Menggunakan drawImage untuk mengisi seluruh area, gambar akan diregangkan/dipotong jika rasio tidak sama
-            ctx.drawImage(customBackgroundImage, 0, 0, outCanvas.width, outCanvas.height);
-            
-        } else {
-            // Logika default (warna solid)
-            ctx.fillStyle = bgColor;
-            ctx.fillRect(0,0,outCanvas.width, outCanvas.height);
-        }
-        // --- AKHIR LOGIKA BACKGROUND ---
-
-
-        // DrawMask akan menggambar image + mask ke canvas:
-        const opacity = 1.0;
-        const maskBlurAmount = parseInt(blurRange.value,10); 
-        bodyPix.drawMask(
-          outCanvas,             // canvas hasil
-          imageElement,          // image input
-          mask,                  // mask hasil segmentasi
-          opacity,
-          maskBlurAmount,
-          false                  // flipHorizontal
-        );
-
-        // Simpan dataURL terakhir
-        lastResultDataURL = outCanvas.toDataURL('image/png');
-        downloadBtn.disabled = false;
-
-      } catch(err){
-        console.error(err);
-        alert('Terjadi kesalahan saat memproses gambar. Pastikan gambar jelas dan berfokus pada satu orang.');
-      } finally {
-        processBtn.disabled = false;
-        processBtn.textContent = 'Proses (AI)';
-      }
-    }
-
-    // 3. Tombol proses & download
-    processBtn.addEventListener('click', processImage);
-
-    downloadBtn.addEventListener('click', (e)=>{
-      e.preventDefault();
-      if(!lastResultDataURL){
-         alert('Silakan proses gambar terlebih dahulu.');
-         return;
-      }
-      triggerDownload(lastResultDataURL);
-    });
-
-    function triggerDownload(dataURL){
-      const a = document.createElement('a');
-      a.href = dataURL;
-      const colorText = colorSelect.options[colorSelect.selectedIndex].text;
-      const colorName = colorText.replace(' Formal', '').replace(' ', '_').toLowerCase();
-      a.download = `foto_formal_bg_${colorName}.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }
-    
-    // 4. Tombol Share
-    telegramShare.addEventListener('click', function() {
-        const colorName = colorSelect.options[colorSelect.selectedIndex].text;
-        const shareMessage = `Aku berhasil ganti latar belakang foto formal jadi warna ${colorName} secara otomatis pakai AI Tool ini! Coba kamu juga, @GW_GK!`;
-        const url = `https://t.me/GW_GK?text=${encodeURIComponent(shareMessage)}`;
-        window.open(url, '_blank');
-    });
-
-    // Inisialisasi: panggil loadModel lebih awal
-    loadModel();
-    drawPlaceholder();
-  </script>
 </body>
-</html>
+  </html>
